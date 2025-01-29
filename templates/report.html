@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Report</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --hover-color: #45a049;
+            --background: #f8f9fa;
+            --text-primary: #2c3e50;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        /* Enahncement */
+        .report-options {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+          margin-bottom: 2rem;
+        }
+
+        .report-type {
+          padding: 1rem;
+          border: 2px solid #e9ecef;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .report-type:hover {
+          border-color: var(--primary-color);
+          background: rgba(76, 175, 80, 0.1);
+        }
+
+        .report-type:selected{
+          border-color: var(--primary-color);
+          background: rgba(76, 175, 80, 0.1);
+        }
+
+        .report-icon {
+          font-size: 1.5rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .date-range {
+          font-size: 1.5rem;
+          margin-bottom: 0.5rem;
+        }
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        .date-range input {
+          flex: 1;
+        }
+
+        .export-options {
+          margin-top: 1rem;
+          padding: 1rem;
+          background: var(--background);
+          border-radius: 8px;
+        }
+
+        .export-options select {
+          width: 10%;
+          padding: 0.5rem;
+          margin-bottom: irem;
+          border-radius: 4px;
+          border: 1px solid #e9ecef;
+        }
+
+        #loading {
+          display: none;
+          margin: 1rem 0;
+          color: var(--text-primary);
+        }
+
+        .spinner {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          border: 3px solid rgba(76, 175, 80, 0.3);
+          border-radius: 50%;
+          border-top-color: var(--primary-color);
+          animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="date-icon">📊</div>
+        <h1>Generate Report</h1>
+        <form id="reportForm" method="post" action="/report">
+          <div class="report-options">
+            <div class="report-type" data-type="monthly">
+              <div class="report-icon">📅</div>
+              <h3>Monthly Summary</h3>
+            </div>
+            <div class="report-type" data-type="category">
+              <div class="report-icon">📊</div>
+              <h3>Category Breakdown</h3>
+            </div>
+            <div class="report-type" data-type="trend">
+              <div class="report-icon">📈</div>
+              <h3>Trend Analysis</h3>
+            </div>
+            <div class="report-type" data-type="budget">
+              <div class="report-icon">💰</div>
+              <h3>Budget Comaprison</h3>
+            </div>
+          </div>
+
+          <div class="date-range">
+            <div class="form-group">
+              <label>Start Date</label>
+              <input type="month" name="start_date" required>
+            </div>
+            <div class="form-group">
+              <label>End Date</label>
+              <input type="month" name="end_date" required>
+            </div>
+            </div>
+
+            <div class="export-options">
+              <label>Export Format</label>
+              <select name="format">
+                <option value="pdf">PDF Report</option>
+                <option value="csv">CSV Report</option>
+                <option value="excel">Excel Spreadshett</option>
+              </select>
+            </div>
+
+            <div id="loading">
+              <div class="Spinner"></div>
+              <p>Generating report...</p>
+            </div>
+
+            <input type="submit" value="Generate Report">
+          </form>
+          <a href="/" class="back-link">← Back to Dashboard</a>
+        </div>
+
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            // Report type selection
+            const reportTypes = document.querySelectorAll('.report-type');
+            reportTypes.forEach(type => {
+              type.addEventListener('click', function() {
+                reportTypes.forEach(t => t.classList.remove('selected'));
+                this.classList.add('selected');
+                const reportType = this.dataset.type;
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'report_type';
+                hiddenInput.value = reportType;
+                document.getElementById('reportForm').appendChild(hiddenInput);
+              });
+            });
+
+            // Form submission handling
+            document.getElementById('reportForm').addEventListener('submit', function(event) {
+              event.preventDefault();
+
+              // Validate dates
+              const startDate = this.ellements['start_date'].value;
+              const endDate = this.elements['end_date'].value;
+
+              if (startDate > endDate) {
+                alert('Start date must be before end date.');
+                return;
+              }
+
+              // Show loading state
+
+              document.getElemntById('loading').style.display = 'block';
+
+              // Submit the form
+              setTimeout(() => {
+                this.submit();
+              }, 500);
+            });
+
+            // Set default dates
+            const today = new Date();
+            const startDate = document.querySelector('input[name="start_date"]');
+            const endDate = document.queirySelector('input[name="end_date"]');
+
+            endDate.value = today.toISOString().slice(0, 7);
+            today.setMonth(today.getMonth() - 1);
+            startDate.value = today.toISOString().slice(0, 7);
+          });
+        </script>
+      </body>
+    </html>
+
+
+
+
+
+        <!-- /* h1 {
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            background: var(--primary-color);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        input[type="submit"]:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: var(--text-primary);
+        }
+
+        .date-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="date-icon">📅</div>
+        <h1>Generate Monthly Report</h1>
+        <form id="reportForm" method="post" action="/report">
+            <div class="form-group">
+                <label>Month (YYYY-MM)</label>
+                <input type="text"
+                       name="month"
+                       id="month"
+                       required
+                       pattern="\d{4}-\d{2}"
+                       placeholder="e.g., 2024-01"
+                       title="Enter a valid month in the format (YYYY-MM)">
+            </div>
+            <input type="submit" value="Generate Report">
+        </form>
+        <a href="/" class="back-link">← Back to Dashboard</a>
+    </div>
+
+    <script>
+        document.getElementById('reportForm').addEventListener('submit', function(event) {
+            const monthInput = document.getElementById('month');
+            const monthValue = monthInput.value;
+            const regex = /^\d{4}-\d{2}$/;
+
+            if (!regex.test(monthValue)) {
+                alert('Please enter a valid month in the format (YYYY-MM)');
+                event.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html> */ -->

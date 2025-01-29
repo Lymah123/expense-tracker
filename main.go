@@ -1,76 +1,159 @@
 package main
 
 import (
-	handlers "expense-tracker/handlers"
-	"expense-tracker/models"
-	"expense-tracker/reports"
-	"expense-tracker/storage"
-	"fmt"
-	"log"
+    "database/sql"
+    handlers "expense-tracker/handlers"
+    "expense-tracker/models"
+    "expense-tracker/reports"
+    "expense-tracker/storage"
+		"expense-tracker/apihandlers"
+    "fmt"
+    "html/template"
+    "log"
+    "net/http"
+    "strconv"
 )
 
+func landingHandler(w http.ResponseWriter, r *http.Request) {
+    renderTemplate(w, "landing", nil)
+}
+
+func dashboardHandler(w http.ResponseWriter, r *http.Request) {
+    renderTemplate(w, "dashboard", nil)
+}
+
+var (
+    db        *sql.DB
+    templates map[string]*template.Template
+)
+
+func init() {
+    templates = make(map[string]*template.Template)
+    templateFiles := []string{"landing", "dashboard", "home", "add", "view", "report"}
+    for _, tmpl := range templateFiles {
+        t, err := template.ParseFiles("templates/" + tmpl + ".html")
+        if err != nil {
+            log.Fatalf("Failed to parse template %s: %v", tmpl, err)
+        }
+        templates[tmpl] = t
+    }
+}
+
 func main() {
-	db, err := storage.InitDB("data/expenses.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
+    var err error
+    db, err = storage.InitDB("data/expenses.db")
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer db.Close()
 
-	// CLI Interface
-	fmt.Println("Expense Tracker")
-	for {
-		fmt.Println("\nChoose an option:")
-		fmt.Println("1. Add expense")
-		fmt.Println("2. View expense")
-		fmt.Println("3. Generate monthly report")
-		fmt.Println("4. Exit")
+		// // Create the budget table if it doesn't exist
+		// err = createBudgetTable(db)
+		// if err != nil {
+		// 	log.Fatal(err)
+		// }
 
-		var choice int
-		fmt.Scan(&choice)
+    // Create a new router instance
+    mux := http.NewServeMux()
 
-		switch choice {
-		case 1:
-			var exp models.Expense
-			fmt.Print("Amount: ")
-			fmt.Scan(&exp.Amount)
-			fmt.Print("Category: ")
-			fmt.Scan(&exp.Category)
-			fmt.Print("Description: ")
-			fmt.Scan(&exp.Description)
-			fmt.Print("Date(YYYY-MM-DD): ")
-			fmt.Scan(&exp.Date)
+    // Register routes in the correct order
+    mux.HandleFunc("/", landingHandler)
+    mux.HandleFunc("/dashboard", dashboardHandler)
+    mux.HandleFunc("/home", homeHandler)
+    mux.HandleFunc("/add", addExpenseHandler)
+    mux.HandleFunc("/view", viewExpensesHandler)
+    mux.HandleFunc("/report", generateReportHandler)
 
-			if err := handlers.AddExpenses(db, exp); err != nil {
-				log.Println("Error adding expense:", err)
-			} else {
-				fmt.Println("Expense added successfully!")
-			}
+		// Register API routes
+		mux.HandleFunc("/api/overview", apihandlers.OverviewHandler(db))
+		mux.HandleFunc("/api/recent-transactions", apihandlers.RecentTransactionsHandler(db))
+		mux.HandleFunc("/api/expense-distribution", apihandlers.ExpenseDistributionHandler(db))
 
-		case 2:
-			expenses, err := handlers.GetExpenses(db)
-			if err != nil {
-				log.Println("Error retrieving expenses:", err)
-			} else {
-				for _, e := range expenses {
-					fmt.Printf("%d: %.2f %s (%s) - %s\n", e.Id, e.Amount, e.Category, e.Description, e.Date)
-				}
-			}
+    fmt.Println("Server started on :8080")
+    log.Fatal(http.ListenAndServe(":8080", mux))
+}
 
-		case 3:
-			var month string
-			fmt.Print("Enter month (YYYY-MM): ")
-			fmt.Scan(&month)
+// func createBudgetTable(db *sql.DB) error {
+// 	// Create the budget table if it doesn't exist
+// 	budgetTable := `
+// 	CREATE TABLE IF NOT EXISTS budget (
+// 	id INTEGER PRIMARY KEY AUTOINCREMENT,
+// 	budget float
+// 	);`
+// 	_, err := db.Exec(budgetTable)
+// 	if err != nil {
+// 		return err
+// }
+// // Insert a default budget value if the table is empty
+// _, err = db.Exec("INSERT INTO budget (budget) SELECT 5000 WHERE NOT EXISTS (SELECT 1 FROM budget);")
+// if err != nil {
+//     return err
+// }
+// return nil
+// }
 
-			if err := reports.GenerateMonthlyReport(db, month); err != nil {
-				log.Println("Error generating report:", err)
-			}
+func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
+    t, ok := templates[tmpl]
+    if !ok {
+        http.Error(w, "Template not found", http.StatusInternalServerError)
+        return
+    }
+    err := t.Execute(w, data)
+    if err != nil {
+        log.Printf("Template execution error: %v", err)
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+    }
+}
 
-		case 4:
-			fmt.Println("Goodbye!")
-			return
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+    renderTemplate(w, "home", nil)
+}
 
-		default:
-			fmt.Println("Invalid option")
-		}
-	}
+func addExpenseHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodPost {
+        exp := models.Expense{
+            Amount:      parseFloat(r.FormValue("amount")),
+            Category:    r.FormValue("category"),
+            Description: r.FormValue("description"),
+            Date:        r.FormValue("date"),
+        }
+
+        if err := handlers.AddExpenses(db, exp); err != nil {
+            http.Error(w, "Error adding expense", http.StatusInternalServerError)
+            return
+        }
+        http.Redirect(w, r, "/", http.StatusSeeOther)
+        return
+    }
+    renderTemplate(w, "add", nil)
+}
+
+func viewExpensesHandler(w http.ResponseWriter, r *http.Request) {
+    expenses, err := handlers.GetExpenses(db)
+    if err != nil {
+        http.Error(w, "Error retrieving expenses", http.StatusInternalServerError)
+        return
+    }
+    renderTemplate(w, "view", expenses)
+}
+
+func generateReportHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method == http.MethodPost {
+        month := r.FormValue("month")
+        if err := reports.GenerateMonthlyReport(db, month); err != nil {
+            http.Error(w, "Error generating report", http.StatusInternalServerError)
+            return
+        }
+        http.Redirect(w, r, "/", http.StatusSeeOther)
+        return
+    }
+    renderTemplate(w, "report", nil)
+}
+
+func parseFloat(s string) float64 {
+    f, err := strconv.ParseFloat(s, 64)
+    if err != nil {
+        return 0
+    }
+    return f
 }

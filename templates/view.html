@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Expenses</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --text-primary: #2c3e50;
+            --text-secondary: #6c757d;
+            --background: #f8f9fa;
+            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            margin: 0;
+            padding: 2rem;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+        .expense-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .expense-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.2s ease;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .expense-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .amount {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .category {
+            padding: 0.3rem 0.8rem;
+            background: #e9ecef;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .description {
+            color: var(--text-primary);
+        }
+
+        .date {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #45a049;
+        }
+
+        .no-expenses {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Expense History</h1>
+        <div class="expense-grid">
+            {{if .}}
+                {{range .}}
+                <div class="expense-card">
+                    <span class="amount">${{.Amount}}</span>
+                    <span class="category">{{.Category}}</span>
+                    <span class="description">{{.Description}}</span>
+                    <span class="date">{{.Date}}</span>
+                </div>
+                {{end}}
+            {{else}}
+                <div class="no-expenses">No expenses recorded yet.</div>
+            {{end}}
+        </div>
+        <a href="/" class="back-link">← Back to Dashboard</a>
+    </div>
+</body>
+</html>

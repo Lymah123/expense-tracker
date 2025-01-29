@@ -11,8 +11,8 @@ func InitDB(filepath string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	// Create table if not exist
-	query := `
+	// Create expenses table if not exist
+	expenseQuery := `
 	CREATE TABLE IF NOT EXISTS expenses (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		amount REAL,
@@ -20,11 +20,23 @@ func InitDB(filepath string) (*sql.DB, error) {
 		description TEXT,
 		date TEXT
 		);`
-		if _, err := db.Exec(query); err != nil {
+		if _, err := db.Exec(expenseQuery); err != nil {
 			return nil, err
 		}
 
-		return db, nil
+// Create category_budgets table if not exists
+budgetsQuery := `
+CREATE TABLE IF NOT EXISTS category_budgets (
+   category VAR CHAR(50) PRIMARY KEY,
+	 budget_amount DECIMAL(10, 2)
+	 );`
+
+	 if _, err := db.Exec(budgetsQuery); err != nil {
+		return nil, err
+	 }
+
+	 return db, nil
 }
+
 
 // The InitDB function initializes a SQLite database connection, creates an expensees table if it doesn't exist, returns the database connection.

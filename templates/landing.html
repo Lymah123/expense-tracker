@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker - Welcome</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #45a049;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f8f9fa;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .cta-button {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Welcome to Expense Tracker</h1>
+        <p>Take control of your finances with our simple and effective tracking tools</p>
+        <a href="/dashboard" class="cta-button">Get Started</a>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <h3>Track Expenses</h3>
+            <p>Easily log and categorize your daily expenses</p>
+        </div>
+        <div class="feature-card">
+            <h3>Monthly Reports</h3>
+            <p>Generate detailed reports to analyze your spending</p>
+        </div>
+        <div class="feature-card">
+            <h3>Budget Planning</h3>
+            <p>Set budgets and track your financial goals</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --hover-color: #45a049;
+            --background: #f8f9fa;
+            --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+        }
+
+        .menu-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .menu-item {
+            background: var(--background);
+            padding: 1.2rem;
+            border-radius: 12px;
+            color: #2c3e50;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary-color);
+            background: white;
+        }
+
+        .add-expense {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .add-expense:hover {
+            background: var(--hover-color);
+            border-color: transparent;
+        }
+
+        .icon {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Expense Tracker</h1>
+        <div class="menu-grid">
+            <a href="/add" class="menu-item add-expense">
+                <span class="icon">➕</span> Add Expense
+            </a>
+            <a href="/view" class="menu-item">
+                <span class="icon">📊</span> View Expenses
+            </a>
+            <a href="/report" class="menu-item">
+                <span class="icon">📈</span> Generate Report
+            </a>
+        </div>
+        <div class="footer">
+            Track your expenses with ease
+        </div>
+    </div>
+</body>
+</html>
