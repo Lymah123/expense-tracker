@@ -1,132 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Expense</title>
-    <style>
-        :root {
-            --primary-color: #4CAF50;
-            --hover-color: #45a049;
-            --background-color: #f8f9fa;
-            --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/css/theme.css">
+  <script src="/static/js/theme.js" defer></script>
+  <title>Add Expense</title>
+  <style>
+    :root {
+      --primary-color: #4CAF50;
+      --hover-color: #45a049;
+      --background-color: #f8f9fa;
+      --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--background-color);
-            margin: 0;
-            padding: 40px 20px;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    [data-theme="dark"] {
+      --primary-color: #4CAF50;
+      --hover-color: #45a049;
+      --background-color: #121212;
+      --text-color: #ffffff;
+      --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      --input-background: #2d2d2d;
+      --input-border: #404040;
+      --label-color: #e0e0e0;
+    }
 
-        .container {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: var(--card-shadow);
-            width: 400px;
-            transition: transform 0.3s ease;
-        }
+    .container {
+      background: var(--card-background);
+      color: var(--text-color);
+    }
 
-        .container:hover {
-            transform: translateY(-5px);
-        }
+    h1 {
+      color: var(--text-color);
+    }
 
-        h1 {
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-            text-align: center;
-        }
+    label {
+      color: var(--label-color);
+    }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+    input[type="text"], select {
+      background: var(--input-background);
+      border-color: var(--input-border);
+      color: var(--text-color);
+    }
 
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #34495e;
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
+    .back-link {
+      color: var(--text-color);
+    }
 
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-            box-sizing: border-box;
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background-color);
+      margin: 0;
+      padding: 40px 20px;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-        }
+    .container {
+      background: white;
+      padding: 2.5rem;
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+      width: 400px;
+      transition: transform 0.3s ease;
+    }
 
-        input[type="submit"] {
-            width: 100%;
-            background: var(--primary-color);
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 1rem;
-        }
+    .container:hover {
+      transform: translateY(-5px);
+    }
 
-        input[type="submit"]:hover {
-            background: var(--hover-color);
-        }
+    h1 {
+      color: #2c3e50;
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      text-align: center;
+    }
 
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 1.5rem;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
 
-        .back-link:hover {
-            color: #343a40;
-        }
-    </style>
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #34495e;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      background: var(--primary-color);
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 1rem;
+    }
+
+    input[type="submit"]:hover {
+      background: var(--hover-color);
+    }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 1.5rem;
+      color: #6c757d;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: #343a40;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Add Expense</h1>
-        <form method="post" action="/add">
-            <div class="form-group">
-                <label>Amount</label>
-                <input type="text" name="amount" placeholder="Enter amount" required>
-            </div>
-            <div class="form-group">
-                <label>Category</label>
-                <input type="text" name="category" placeholder="Enter category" required>
-            </div>
-            <div class="form-group">
-                <label>Description</label>
-                <input type="text" name="description" placeholder="Enter description" required>
-            </div>
-            <div class="form-group">
-                <label>Date</label>
-                <input type="text" name="date" placeholder="YYYY-MM-DD" required>
-            </div>
-            <input type="submit" value="Add Expense">
-        </form>
-        <a href="/" class="back-link">← Back to Dashboard</a>
+  <nav class="main-nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">Expense Tracker</a>
+      <div class="nav-links">
+        <a href="/home">Home</a>
+        <a href="/add">Add Expense</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/view">View Expenses</a>
+        <a href="/report">Reports</a>
+        <a href="/receipts">Receipts</a>
+      </div>
     </div>
+  </nav>
+  <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+  <div class="container">
+    <h1>Add Expense</h1>
+    <form method="post" action="/add">
+      <div class="form-group">
+        <label>Amount</label>
+        <input type="text" name="amount" placeholder="Enter amount" required>
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <input type="text" name="category" placeholder="Enter category" required>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <input type="text" name="description" placeholder="Enter description" required>
+      </div>
+      <div class="form-group">
+        <label>Date</label>
+        <input type="text" name="date" placeholder="YYYY-MM-DD" required>
+      </div>
+      <div class="form-group">
+        <label>Currency</label>
+        <select name="currency" required>
+          {{range .}}
+          <option value="{{.Code}}">{{.Code}} - {{.Symbol}}</option>
+          {{end}}
+        </select>
+      </div>
+      <input type="submit" value="Add Expense">
+    </form>
+    <a href="/" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  {{template "footer.html"}}
 </body>
 </html>

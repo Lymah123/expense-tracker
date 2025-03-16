@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/css/theme.css">
+  <script src="/static/js/theme.js" defer></script>
+  <title>Receipt Management</title>
+  <style>
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: var(--card-background);
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+    }
+
+    h2 {
+      color: var(--text-color);
+      margin-bottom: 1.5rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 2rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
+    li a {
+      color: var(--accent-color);
+      text-decoration: none;
+      padding: 0.5rem;
+      display: block;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+
+    li a:hover {
+      background-color: var(--background-color);
+    }
+
+    form {
+      display: grid;
+      gap: 1rem;
+    }
+
+    label {
+      color: var(--text-color);
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      padding: 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--input-background);
+      color: var(--text-color);
+    }
+
+    input[type="file"] {
+      padding: 0.5rem 0;
+      color: var(--text-color);
+    }
+
+    button {
+      background: var(--primary-color);
+      color: white;
+      padding: 0.8rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background: var(--secondary-color);
+    }
+
+    .receipt-item {
+      background:var(--background-color);
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .receipt-details {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .receipt-details a {
+      margin-top: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <nav class="main-nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">Expense Tracker</a>
+      <div class="nav-links">
+        <a href="/home">Home</a>
+        <a href="/add">Add Expense</a>
+        <a href="/Dashboard">Dashboard</a>
+        <a href="/view">View Expenses</a>
+        <a href="/report">Reports</a>
+        <a href="/receipts">Receipts</a>
+      </div>
+    </div>
+  </nav>
+  <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+  <div class="container">
+    <h2>Receipts</h2>
+    <ul>
+      {{ range .Receipts }}
+        <li class="receipt-item">
+          <div class="receipt-details">
+            <div>ID: {{.Id}}</div>
+            <div>Expense ID: {{.ExpenseId}}</div>
+            <div>File Path: {{.FilePath}}</div>
+            <div>Uploaded At: {{.UploadedAt}}</div>
+            <a href="/view-receipts?file={{ .FilePath }}">View Receipt</a>
+          </div>
+        </li>
+      {{ end }}
+    </ul>
+
+    <form action="/upload-receipt" method="post" enctype="multipart/form-data">
+      <label for="category">Category:</label>
+      <input type="text" name="category" required>
+
+      <label for="amount">Amount:</label>
+      <input type="number" name="amount" required>
+
+      <label for="receipt">Upload Receipt: </label>
+      <input type="file" name="receipt" accept="image/*">
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <h2>Upload Receipt</h2>
+    <input type="file" id="fileInput">
+    <button onclick="uploadReceipt()">Upload</button>
+    <p id="status"></p>
+  </div>
+
+  {{template "footer.html"}}
+
+  <script src="/static/js/theme.js"></script>
+  <script>
+    async function uploadReceipt() {
+      const fileInput = document.getElementById("fileInput");
+      if (!fileInput.files.length) {
+        alert("Please select a file.");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch("/upload", {
+          method: "POST",
+          body: formData
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          document.getElementById("status").innerHTML = `File uploaded: <a href="${result.url}" target="_blank">${result.url}</a>`;
+        } else {
+          document.getElementById("status").innerText = "Upload failed: " + result.error;
+        }
+      } catch (error) {
+        document.getElementById("status").innerText = "Error: " + error.message;
+      }
+    }
+  </script>
+</body>
+</html>

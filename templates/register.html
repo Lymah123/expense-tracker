@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      min-height: 100vh;
+      background: var(--background-color);
+      color: var(--text-color);
+    }
+
+    .container {
+      background: var(--card-background);
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: var(--card-shadow);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      color: var(--text-color);
+      margin-bottom: 1rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--input-background);
+      color: var(--text-color);
+    }
+
+    button {
+      width: 100%;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 4px;
+      background: var(--primary-color);
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: var(--hover-color);
+    }
+
+    .toggle-link {
+      color: var(--accent-color);
+      cursor: pointer;
+      margin-top: 1rem;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Register</h2>
+    <input type="email" id="register-email" placeholder="Email"><br>
+    <input type="password" id="register-password" placeholder="Password"><br>
+    <button onclick="register()">Register</button>
+    <div class="toggle-link" onclick="redirectToLogin()">Already have an account? Login</div>
+  </div>
+
+  <script src="/static/js/theme.js" defer></script>
+  <script>
+    async function register() {
+      const email = document.getElementById("register-email").value;
+      const password = document.getElementById("register-password").value;
+
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        window.location.href = '/dashboard';
+      } else {
+        try {
+          const errorData = await response.json();
+          alert(errorData.error || "An unknown error occurred");
+        } catch (e) {
+          alert("Failed to process the server response");
+        }
+      }
+    }
+
+    function redirectToLogin() {
+      window.location.href = '/login';
+    }
+  </script>
+</body>
+</html>

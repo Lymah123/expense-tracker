@@ -1,0 +1,111 @@
+:root {
+  --primary-color: #4CAF50;
+  --secondary-color: #45a049;
+  --accent-color: #2196F3;
+  --background-color: #f8f9fa;
+  --text-color: #000;
+  --card-background: #fff;
+  --border-color: #add;
+}
+
+[data-theme="dark"] {
+  --background-color: #121212;
+  --text-color: #fff;
+  --card-background: #1e1e1e;
+  --border-color: #333;
+}
+
+.card {
+  background: var(--card-background);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  background: var(--card-background);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+
+}
+
+.action-button {
+  background: var(--accent-color);
+  color: var(--text-color);
+}
+
+body {
+  background: var(--background-color);
+  color: var(--text-color);
+  padding-top: 100px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Navigation Styles */
+.main-nav {
+  background: var(--card-background);
+  padding: 1rem 2rem;
+  box-shadow: var(--card-shadow);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  color: var(--primary-color);
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  color: var(--text-color);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  margin-right: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.nav-links a:hover {
+  background: var(--background-color);
+}
+
+/* Landing page styles
+.landing-container { }
+.hero-section { }
+
+/* Add Expense Page Styles */
+/* .expense-form { }
+.form-controls { }
+
+/* View Expenses Page Styles */
+/* .expenses-list { }
+.filter-controls { }
+
+/* Reports Page Styles */
+/* .report-container { }
+.chart-section { }
+
+/* Receipts Page Styles */
+/* .receipts-gallery { }
+.upload-section { } */

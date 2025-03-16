@@ -3,6 +3,9 @@ package storage
 import (
 	"database/sql"
 	_ "github.com/mattn/go-sqlite3"
+	"io"
+	"os"
+	"time"
 )
 
 func InitDB(filepath string) (*sql.DB, error) {
@@ -13,30 +16,66 @@ func InitDB(filepath string) (*sql.DB, error) {
 
 	// Create expenses table if not exist
 	expenseQuery := `
-	CREATE TABLE IF NOT EXISTS expenses (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		amount REAL,
-		category TEXT,
-		description TEXT,
-		date TEXT
-		);`
-		if _, err := db.Exec(expenseQuery); err != nil {
-			return nil, err
-		}
-
-// Create category_budgets table if not exists
-budgetsQuery := `
-CREATE TABLE IF NOT EXISTS category_budgets (
-   category VAR CHAR(50) PRIMARY KEY,
-	 budget_amount DECIMAL(10, 2)
-	 );`
-
-	 if _, err := db.Exec(budgetsQuery); err != nil {
+    CREATE TABLE IF NOT EXISTS expenses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        amount REAL,
+        category TEXT,
+        description TEXT,
+        date TEXT,
+        currency_code TEXT,
+				receipt_path TEXT
+    );`
+	if _, err := db.Exec(expenseQuery); err != nil {
 		return nil, err
-	 }
+	}
 
-	 return db, nil
+	// Create category_budgets table if not exists
+	budgetsQuery := `
+    CREATE TABLE IF NOT EXISTS category_budgets (
+        category VARCHAR(50) PRIMARY KEY,
+        budget_amount DECIMAL(10, 2)
+    );`
+	if _, err := db.Exec(budgetsQuery); err != nil {
+		return nil, err
+	}
+
+	// Create recurring_expenses table if not exists
+	recurringExpensesQuery := `
+    CREATE TABLE IF NOT EXISTS recurring_expenses (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        amount REAL NOT NULL,
+        category TEXT NOT NULL,
+        description TEXT,
+        frequency TEXT NOT NULL CHECK (frequency IN ('daily', 'weekly', 'monthly', 'yearly')),
+        next_due_date TEXT NOT NULL,
+        currency_code TEXT DEFAULT 'USD',
+        currency_symbol TEXT DEFAULT '$',
+        is_active BOOLEAN DEFAULT 1,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (currency_code) REFERENCES currencies(code)
+    );`
+	if _, err := db.Exec(recurringExpensesQuery); err != nil {
+		return nil, err
+	}
+
+	return db, nil
 }
 
+// Backup function
+func BackupDB(dbPath string) error {
+	backupPath := dbPath + "." + time.Now().Format("2025-01-02T15:04:05") + ".bak"
+	srcFile, err := os.Open(dbPath)
+	if err != nil {
+		return err
+	}
+	defer srcFile.Close()
 
-// The InitDB function initializes a SQLite database connection, creates an expensees table if it doesn't exist, returns the database connection.
+	dstFile, err := os.Create(backupPath)
+	if err != nil {
+		return err
+	}
+	defer dstFile.Close()
+
+	_, err = io.Copy(dstFile, srcFile)
+	return err
+}

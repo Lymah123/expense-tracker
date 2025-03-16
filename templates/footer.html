@@ -1,0 +1,47 @@
+<footer class="footer">
+  <div class="footer-container">
+      <p>&copy; 2025 Expense Tracker. All rights reserved.</p>
+      <div class="footer-links">
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/terms">Terms of Service</a>
+          <a href="/contact">Contact Us</a>
+      </div>
+  </div>
+</footer>
+<style>
+  .footer {
+      background: var(--card-background);
+      padding: 1rem 2rem;
+      box-shadow: var(--card-shadow);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      z-index: 1000;
+      text-align: center;
+  }
+
+  .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+  }
+
+  .footer-links {
+      display: flex;
+      gap: 1rem;
+  }
+
+  .footer-links a {
+      color: var(--text-color);
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+  }
+
+  .footer-links a:hover {
+      background: var(--background-color);
+  }
+</style>

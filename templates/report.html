@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <script src="/static/js/theme.js" defer></script>
     <title>Generate Report</title>
     <style>
         :root {
@@ -11,6 +13,16 @@
             --background: #f8f9fa;
             --text-primary: #2c3e50;
             --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --card-background: white;
+            --border-color: #e9ecef;
+        }
+
+        [data-theme="dark"] {
+          --background: #121212;
+          --text-primary: #ffffff;
+          --card-background: #1e1e1e;
+          --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+          --border-color: #333;
         }
 
         body {
@@ -21,10 +33,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            color: var(--text-primary);
         }
 
         .container {
-            background: white;
+            background: var(--card-background);
             padding: 3rem;
             border-radius: 16px;
             box-shadow: var(--card-shadow);
@@ -34,7 +47,10 @@
             transition: transform 0.3s ease;
         }
 
-        /* Enahncement */
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
         .report-options {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
@@ -44,19 +60,33 @@
 
         .report-type {
           padding: 1rem;
-          border: 2px solid #e9ecef;
+          border: 2px solid var(--border-color);
           cursor: pointer;
           transition: all 0.3s ease;
+          background: var(--card-background);
+          color: var(--text-primary);
         }
 
-        .report-type:hover {
+        .report-type:hover,
+        .report-type.selected {
           border-color: var(--primary-color);
           background: rgba(76, 175, 80, 0.1);
         }
 
-        .report-type:selected{
-          border-color: var(--primary-color);
-          background: rgba(76, 175, 80, 0.1);
+        input[type="month"],
+        select {
+          background: var(--card-background);
+          color: var(--text-primary);
+          border: 1px solid var(--border-color);
+          padding: 0.5rem;
+          border-radius: 4px;
+        }
+
+        .back-link {
+          color: var(--text-primary);
+          text-decoration: none;
+          margin-top: 1rem;
+          display: inline-block;
         }
 
         .report-icon {
@@ -67,9 +97,6 @@
         .date-range {
           font-size: 1.5rem;
           margin-bottom: 0.5rem;
-        }
-        .container:hover {
-            transform: translateY(-5px);
         }
 
         .date-range input {
@@ -84,11 +111,11 @@
         }
 
         .export-options select {
-          width: 10%;
+          width: 100%;
           padding: 0.5rem;
-          margin-bottom: irem;
+          margin-bottom: 1rem;
           border-radius: 4px;
-          border: 1px solid #e9ecef;
+          border: 1px solid var(--border-color);
         }
 
         #loading {
@@ -113,6 +140,20 @@
       </style>
     </head>
     <body>
+      <nav class="main-nav">
+        <div class="nav-container">
+          <a href="/" class="nav-logo">Expense Tracker</a>
+          <div class="nav-links">
+            <a href="/home">Home</a>
+            <a href="/add">Add Expense</a>
+            <a href="/dashboard">Dashboard</a>
+            <a href="/view">View Expenses</a>
+            <a href="/report">Reports</a>
+            <a href="/receipts">Receipts</a>
+          </div>
+        </div>
+      </nav>
+      <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
       <div class="container">
         <div class="date-icon">📊</div>
         <h1>Generate Report</h1>
@@ -122,17 +163,13 @@
               <div class="report-icon">📅</div>
               <h3>Monthly Summary</h3>
             </div>
-            <div class="report-type" data-type="category">
-              <div class="report-icon">📊</div>
-              <h3>Category Breakdown</h3>
+            <div class="report-type" data-type="weekly">
+              <div class="report-icon">📅</div>
+              <h3>Weekly Summary</h3>
             </div>
-            <div class="report-type" data-type="trend">
-              <div class="report-icon">📈</div>
-              <h3>Trend Analysis</h3>
-            </div>
-            <div class="report-type" data-type="budget">
-              <div class="report-icon">💰</div>
-              <h3>Budget Comaprison</h3>
+            <div class="report-type" data-type="yearly">
+              <div class="report-icon">📅</div>
+              <h3>Yearly Summary</h3>
             </div>
           </div>
 
@@ -145,189 +182,77 @@
               <label>End Date</label>
               <input type="month" name="end_date" required>
             </div>
-            </div>
+          </div>
 
-            <div class="export-options">
-              <label>Export Format</label>
-              <select name="format">
-                <option value="pdf">PDF Report</option>
-                <option value="csv">CSV Report</option>
-                <option value="excel">Excel Spreadshett</option>
-              </select>
-            </div>
+          <div class="export-options">
+            <label>Export Format</label>
+            <select name="format">
+              <option value="pdf">PDF Report</option>
+              <option value="csv">CSV Report</option>
+              <option value="excel">Excel Spreadsheet</option>
+            </select>
+          </div>
 
-            <div id="loading">
-              <div class="Spinner"></div>
-              <p>Generating report...</p>
-            </div>
+          <div id="loading">
+            <div class="spinner"></div>
+            <p>Generating report...</p>
+          </div>
 
-            <input type="submit" value="Generate Report">
-          </form>
-          <a href="/" class="back-link">← Back to Dashboard</a>
-        </div>
-
-        <script>
-          document.addEventListener('DOMContentLoaded', function() {
-            // Report type selection
-            const reportTypes = document.querySelectorAll('.report-type');
-            reportTypes.forEach(type => {
-              type.addEventListener('click', function() {
-                reportTypes.forEach(t => t.classList.remove('selected'));
-                this.classList.add('selected');
-                const reportType = this.dataset.type;
-                const hiddenInput = document.createElement('input');
-                hiddenInput.type = 'hidden';
-                hiddenInput.name = 'report_type';
-                hiddenInput.value = reportType;
-                document.getElementById('reportForm').appendChild(hiddenInput);
-              });
-            });
-
-            // Form submission handling
-            document.getElementById('reportForm').addEventListener('submit', function(event) {
-              event.preventDefault();
-
-              // Validate dates
-              const startDate = this.ellements['start_date'].value;
-              const endDate = this.elements['end_date'].value;
-
-              if (startDate > endDate) {
-                alert('Start date must be before end date.');
-                return;
-              }
-
-              // Show loading state
-
-              document.getElemntById('loading').style.display = 'block';
-
-              // Submit the form
-              setTimeout(() => {
-                this.submit();
-              }, 500);
-            });
-
-            // Set default dates
-            const today = new Date();
-            const startDate = document.querySelector('input[name="start_date"]');
-            const endDate = document.queirySelector('input[name="end_date"]');
-
-            endDate.value = today.toISOString().slice(0, 7);
-            today.setMonth(today.getMonth() - 1);
-            startDate.value = today.toISOString().slice(0, 7);
-          });
-        </script>
-      </body>
-    </html>
-
-
-
-
-
-        <!-- /* h1 {
-            color: var(--text-primary);
-            margin-bottom: 2rem;
-            font-size: 1.8rem;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.8rem;
-            color: var(--text-primary);
-            font-weight: 500;
-            font-size: 0.95rem;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
-        }
-
-        input[type="submit"] {
-            width: 100%;
-            background: var(--primary-color);
-            color: white;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 1rem;
-        }
-
-        input[type="submit"]:hover {
-            background: var(--hover-color);
-            transform: translateY(-2px);
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 1.5rem;
-            color: #6c757d;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
-        }
-
-        .back-link:hover {
-            color: var(--text-primary);
-        }
-
-        .date-icon {
-            font-size: 2rem;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="date-icon">📅</div>
-        <h1>Generate Monthly Report</h1>
-        <form id="reportForm" method="post" action="/report">
-            <div class="form-group">
-                <label>Month (YYYY-MM)</label>
-                <input type="text"
-                       name="month"
-                       id="month"
-                       required
-                       pattern="\d{4}-\d{2}"
-                       placeholder="e.g., 2024-01"
-                       title="Enter a valid month in the format (YYYY-MM)">
-            </div>
-            <input type="submit" value="Generate Report">
+          <input type="submit" value="Generate Report">
         </form>
         <a href="/" class="back-link">← Back to Dashboard</a>
-    </div>
+      </div>
 
-    <script>
-        document.getElementById('reportForm').addEventListener('submit', function(event) {
-            const monthInput = document.getElementById('month');
-            const monthValue = monthInput.value;
-            const regex = /^\d{4}-\d{2}$/;
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // Report type selection
+          const reportTypes = document.querySelectorAll('.report-type');
+          reportTypes.forEach(type => {
+            type.addEventListener('click', function() {
+              reportTypes.forEach(t => t.classList.remove('selected'));
+              this.classList.add('selected');
+              const reportType = this.dataset.type;
+              const hiddenInput = document.createElement('input');
+              hiddenInput.type = 'hidden';
+              hiddenInput.name = 'report_type';
+              hiddenInput.value = reportType;
+              document.getElementById('reportForm').appendChild(hiddenInput);
+            });
+          });
 
-            if (!regex.test(monthValue)) {
-                alert('Please enter a valid month in the format (YYYY-MM)');
-                event.preventDefault();
+          // Form submission handling
+          document.getElementById('reportForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Validate dates
+            const startDate = this.elements['start_date'].value;
+            const endDate = this.elements['end_date'].value;
+
+            if (startDate > endDate) {
+              alert('Start date must be before end date.');
+              return;
             }
+
+            // Show loading state
+            document.getElementById('loading').style.display = 'block';
+
+            // Submit the form
+            setTimeout(() => {
+              this.submit();
+            }, 500);
+          });
+
+          // Set default dates
+          const today = new Date();
+          const startDate = document.querySelector('input[name="start_date"]');
+          const endDate = document.querySelector('input[name="end_date"]');
+
+          endDate.value = today.toISOString().slice(0, 7);
+          today.setMonth(today.getMonth() - 1);
+          startDate.value = today.toISOString().slice(0, 7);
         });
-    </script>
-</body>
-</html> */ -->
+      </script>
+
+      {{template "footer.html"}}
+    </body>
+</html>

@@ -3,39 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <script src="/static/js/theme.js" defer></script>
+    <title>Expense Tracker - Welcome</title>
     <style>
         :root {
             --primary-color: #4CAF50;
             --hover-color: #45a049;
+            --secondary-color: #45a049;
             --background: #f8f9fa;
+            --background-color: #f8f9fa;
             --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --text-color: #2c3e50;
+            --card-background: white;
+        }
+
+        [data-theme="dark"] {
+          --background: #121212;
+          --background-color: #121212;
+          --card-background: #1e1e1e;
+          --text-color: #ffffff;
+          --card-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+          --menu-item-background: #2d2d2d;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--background);
             margin: 0;
+            padding: 0;
+            color: var(--text-color);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .container {
-            background: white;
+        /* Navigation Bar Styling */
+        .main-nav {
+            background: var(--card-background);
+            padding: 1rem 2rem;
+            box-shadow: var(--card-shadow);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: var(--background);
+        }
+
+        .theme-toggle {
+            background: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--secondary-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 8rem 2rem 4rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+        }
+
+        .cta-button {
+            background: var(--card-background);
+            color: var(--primary-color);
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 3rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--card-background);
+            color: var(--text-color);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Dashboard Menu Section */
+        .dashboard-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 2rem;
+            background-color: var(--background);
+        }
+
+        .menu-container {
+            background: var(--card-background);
             padding: 3rem;
             border-radius: 16px;
             box-shadow: var(--card-shadow);
             width: 100%;
-            max-width: 400px;
+            max-width: 500px;
             text-align: center;
         }
 
-        h1 {
-            color: #2c3e50;
+        .menu-container h2 {
+            color: var(--text-color);
             margin-bottom: 2rem;
-            font-size: 2.2rem;
+            font-size: 2rem;
         }
 
         .menu-grid {
@@ -47,17 +184,19 @@
             background: var(--background);
             padding: 1.2rem;
             border-radius: 12px;
-            color: #2c3e50;
+            color: var(--text-color);
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
             border: 2px solid transparent;
+            display: flex;
+            align-items: center;
         }
 
         .menu-item:hover {
             transform: translateY(-3px);
             border-color: var(--primary-color);
-            background: white;
+            background: var(--card-background);
         }
 
         .add-expense {
@@ -72,32 +211,113 @@
 
         .icon {
             margin-right: 8px;
+            font-size: 1.2rem;
         }
 
         .footer {
             margin-top: 2rem;
-            color: #6c757d;
+            color: var(--text-color);
+            opacity: 0.7;
             font-size: 0.9rem;
+            text-align: center;
+            padding: 1rem;
+            background-color: var(--card-background);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Expense Tracker</h1>
-        <div class="menu-grid">
-            <a href="/add" class="menu-item add-expense">
-                <span class="icon">➕</span> Add Expense
-            </a>
-            <a href="/view" class="menu-item">
-                <span class="icon">📊</span> View Expenses
-            </a>
-            <a href="/report" class="menu-item">
-                <span class="icon">📈</span> Generate Report
-            </a>
+    <!-- Navigation Bar -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Expense Tracker</a>
+            <div class="nav-links">
+                <a href="/home">Home</a>
+                <a href="/add">Add Expense</a>
+                <a href="/dashboard">Dashboard</a>
+                <a href="/view">View Expenses</a>
+                <a href="/report">Reports</a>
+                <a href="/receipts">Receipts</a>
+            </div>
+            <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
         </div>
-        <div class="footer">
-            Track your expenses with ease
+    </nav>
+
+    <!-- Hero Section from the second page -->
+    <div class="hero">
+        <h1>Welcome to Expense Tracker</h1>
+        <p>Take control of your finances with our simple and effective tracking tools</p>
+        <a href="/dashboard" class="cta-button">Get Started</a>
+    </div>
+
+    <!-- Features Section from the second page -->
+    <div class="features">
+        <div class="feature-card">
+            <h3>Track Expenses</h3>
+            <p>Easily log and categorize your daily expenses</p>
+        </div>
+        <div class="feature-card">
+            <h3>Expense Reports</h3>
+            <p>Generate detailed reports to analyze your spending</p>
+        </div>
+        <div class="feature-card">
+            <h3>Budget Planning</h3>
+            <p>Set budgets and track your financial goals</p>
         </div>
     </div>
+
+    <!-- Dashboard Section from the first page -->
+    <div id="dashboard" class="dashboard-section">
+        <div class="menu-container">
+            <h2>Quick Actions</h2>
+            <div class="menu-grid">
+                <a href="/add" class="menu-item add-expense">
+                    <span class="icon">➕</span> Add Expense
+                </a>
+                <a href="/view" class="menu-item">
+                    <span class="icon">📊</span> View Expenses
+                </a>
+                <a href="/report" class="menu-item">
+                    <span class="icon">📈</span> Generate Report
+                </a>
+            </div>
+            <div class="footer">
+                Track your expenses with ease
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Template -->
+    {{template "footer.html"}}
+
+    <!-- JavaScript for Theme Toggle -->
+    <script>
+        // Check for saved theme preference or default to 'light'
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-theme', currentTheme);
+
+        // Update button text based on current theme
+        updateThemeToggleButton();
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            updateThemeToggleButton();
+        }
+
+        function updateThemeToggleButton() {
+            const button = document.getElementById('theme-toggle');
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+
+            if (currentTheme === 'dark') {
+                button.innerHTML = '☀️ Light Mode';
+            } else {
+                button.innerHTML = '🌙 Dark Mode';
+            }
+        }
+    </script>
 </body>
 </html>

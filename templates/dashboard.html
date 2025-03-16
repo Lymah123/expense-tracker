@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <script src="/static/js/theme.js" defer></script>
     <title>Expense Tracker - Dashboard</title>
     <style>
-        :root {
-            --primary-color: #4CAF50;
-            --secondary-color: #45a049;
-            --accent-color: #2196F3;
+        [data-theme="dark"] {
+          --background-color: #121212;
+          --text-color: #ffffff;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f8f9fa;
+            background: var(--background-color);
+            color: var(--text-color);
         }
 
         .dashboard {
@@ -26,10 +28,11 @@
         }
 
         .card {
-            background: white;
+            background: var(--card-background);
             border-radius: 8px;
             padding: 1.5rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: var(--text-color);
         }
 
         .quick-actions {
@@ -71,92 +74,146 @@
     </style>
 </head>
 <body>
-    <div class="dashboard">
-        <div class="card">
-            <h2>Quick Actions</h2>
-            <div class="quick-actions">
-                <a href="/add" class="action-button">Add Expense</a>
-                <a href="/report" class="action-button">Generate Report</a>
-            </div>
+  <nav class="main-nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">Expense Tracker</a>
+      <div class="nav-links">
+        <a href="/home">Home</a>
+        <a href="/add">Add Expense</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/view">View Expenses</a>
+        <a href="/report">Reports</a>
+        <a href="/receipts">Receipts</a>
+      </div>
+    </div>
+  </nav>
+  <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+  <div class="dashboard">
+    <div class="card">
+      <h2>Quick Actions</h2>
+      <div class="quick-actions">
+        <a href="/add" class="action-button">Add Expense</a>
+        <a href="/report" class="action-button">Generate Report</a>
+      </div>
 
-            <h3>Monthly Overview</h3>
-            <div class="stats">
-                <div>
-                    <h4>Total Expenses</h4>
-                    <p id="total-expenses">$0.00</p>
-                </div>
-                <div>
-                    <h4>Budget Remaining</h4>
-                    <p id="budget-remaining">$0.00</p>
-                </div>
-            </div>
+      <h3>Monthly Overview</h3>
+      <div class="stats">
+        <div>
+          <h4>Total Expenses</h4>
+          <p id="total-expenses">$0.00</p>
         </div>
-
-        <div class="card">
-            <h2>Expense Distribution</h2>
-            <div class="chart-container">
-              <canvas id="expense-chart"></canvas>
-                <!-- Chart will be rendered here -->
-            </div>
+        <div>
+          <h4>Budget Remaining</h4>
+          <p id="budget-remaining">$0.00</p>
         </div>
-
-        <div class="card">
-            <h2>Recent Transactions</h2>
-            <div class="recent-transactions" id="recent-transactions">
-                <!-- Transactions will be rendered here-->
-            </div>
-        </div>
+      </div>
     </div>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        // Fetch data from the server
-        fetch('/api/overview')
-        .then(response => response.json())
-        .then(data => {
-          document.getElementById('total-expenses').textContent = `$${data.totalExpenses.toFixed(2)}`;
-          document.getElementById('budget-remaining').textContent = `$${data.budgetRemaining.toFixed(2)}`;
-        });
+    <div class="card">
+      <h2>Expense Distribution</h2>
+      <div class="chart-container">
+        <canvas id="expense-chart"></canvas>
+        <!-- Chart will be rendered here -->
+      </div>
+    </div>
 
-        // Fetch transaction data
-        fetch('/api/recent-transactions')
-        .then(response => response.json())
-        .then(data => {
-          const transactionsContainer = document.getElementById('recent-transactions');
-          transactionsContainer.innerHTML = '';
-          data.transactions.forEach(transaction => {
-            const transactionElement = document.createElement('div');
-            transactionElement.className = 'transaction';
-            transactionElement.innerHTML = `<h4>${transaction.category}</h4><p>$${transaction.amount.toFixed(2)} - ${transaction.date}</p>`;
-            transactionsContainer.appendChild(transactionElement);
-          });
-        });
+    <div class="card">
+      <h2>Recent Transactions</h2>
+      <div class="recent-transactions" id="recent-transactions">
+        <!-- Transactions will be rendered here-->
+      </div>
+    </div>
+  </div>
 
-        // Fetch and render the expense distribution chart
-        fetch('/api/expense-distribution')
-        .then(response => response.json())
-        .then(data => {
-          // Render chart using a chart library like Chart.js
-          const canvas = document.getElementById('expense-chart');
-          if (!canvas) {
-            console.log('Canvas element not found.');
-            return;
-          }
+  <div class="card">
+    <h2>Budget Vs Actual</h2>
+    <div class="budget-tracking">
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Budget</th>
+            <th>Actual</th>
+            <th>Remaining</th>
+          </tr>
+        </thead>
+        <tbody id="budget-tracking">
+          <!-- Budget tracking data will be rendered here -->
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-          const ctx = canvas.getContext('2d');
-          new Chart(ctx, {
-            type: 'pie',
-            data: {
-              labels: data.categories,
-              datasets: [{
-                data: data.amounts,
-                backgroundColor: ['#4CAF50', '#45a049', '#2196F3', '#FFC107', '#FF5722'],
-              }]
-            }
-          });
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Fetch budget tracking data
+      fetch('/api/budget-tracking')
+      .then(response => response.json())
+      .then(data => {
+        const budgetTrackingBody = document.getElementById('budget-tracking');
+        budgetTrackingBody.innerHTML = '';
+        data.forEach(item => {
+          const row = document.createElement('tr');
+          row.innerHTML =`
+          <td>${item.category}</td>
+          <td>${item.budgetAmount.toFixed(2)}</td>
+          <td>${item.actualAmount.toFixed(2)}</td>
+          <td>${(item.budgetAmount - item.actualAmount).toFixed(2)}</td>
+          `;
+          budgetTrackingBody.appendChild(row);
         });
       });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+      // Fetch data from the server
+      fetch('/api/overview')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById('total-expenses').textContent = `$${data.totalExpenses.toFixed(2)}`;
+        document.getElementById('budget-remaining').textContent = `$${data.budgetRemaining.toFixed(2)}`;
+      });
+
+      // Fetch transaction data
+      fetch('/api/recent-transactions')
+      .then(response => response.json())
+      .then(data => {
+        const transactionsContainer = document.getElementById('recent-transactions');
+        transactionsContainer.innerHTML = '';
+        data.transactions.forEach(transaction => {
+          const transactionElement = document.createElement('div');
+          transactionElement.className = 'transaction';
+          transactionElement.innerHTML = `<h4>${transaction.category}</h4><p>$${transaction.amount.toFixed(2)} - ${transaction.date}</p>`;
+          transactionsContainer.appendChild(transactionElement);
+        });
+      });
+
+      // Fetch and render the expense distribution chart
+      fetch('/api/expense-distribution')
+      .then(response => response.json())
+      .then(data => {
+        // Render chart using a chart library like Chart.js
+        const canvas = document.getElementById('expense-chart');
+        if (!canvas) {
+          console.log('Canvas element not found.');
+          return;
+        }
+
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+          type: 'pie',
+          data: {
+            labels: data.categories,
+            datasets: [{
+              data: data.amounts,
+              backgroundColor: ['#4CAF50', '#45a049', '#2196F3', '#FFC107', '#FF5722'],
+            }]
+          }
+        });
+      });
+    });
+  </script>
+  <script src="/static/js/theme.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  {{template "footer.html"}}
 </body>
 </html>

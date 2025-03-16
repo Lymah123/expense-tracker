@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      min-height: 100vh;
+      background: var(--background-color);
+      color: var(--text-color);
+    }
+
+    .container {
+      background: var(--card-background);
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: var(--card-shadow);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h2 {
+      color: var(--text-color);
+      margin-bottom: 1rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--input-background);
+      color: var(--text-color);
+    }
+
+    .password-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      background: none;
+      border: none;
+      color: var(--text-color);
+    }
+
+    button {
+      width: 100%;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 4px;
+      background: var(--primary-color);
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: var(--hover-color);
+    }
+
+    .toggle-link {
+      color: var(--accent-color);
+      cursor: pointer;
+      margin-top: 1rem;
+      display: inline-block;
+    }
+
+    .error-message {
+      color: red;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .loading {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="login-container">
+    <h2>Login</h2>
+    <input type="email" id="login-email" placeholder="Email"><br>
+
+    <div class="password-wrapper">
+      <input type="password" id="login-password" placeholder="Password">
+      <button type="button" class="toggle-password" onclick="togglePassword('login-password')">👁</button>
+    </div>
+
+    <button id="login-button" onclick="login()">Login</button>
+    <p id="login-error-message" class="error-message"></p>
+    <div class="toggle-link" onclick="toggleForm()">Don't have an account? Register</div>
+  </div>
+
+  <div class="container" id="register-container" style="display: none;">
+    <h2>Register</h2>
+    <input type="email" id="register-email" placeholder="Email"><br>
+
+    <div class="password-wrapper">
+      <input type="password" id="register-password" placeholder="Password">
+      <button type="button" class="toggle-password" onclick="togglePassword('register-password')">👁</button>
+    </div>
+
+    <div class="password-wrapper">
+      <input type="password" id="register-confirm-password" placeholder="Confirm Password">
+      <button type="button" class="toggle-password" onclick="togglePassword('register-confirm-password')">👁</button>
+    </div>
+
+    <button id="register-button" onclick="register()">Register</button>
+    <p id="register-error-message" class="error-message"></p>
+    <div class="toggle-link" onclick="toggleForm()">Already have an account? Login</div>
+  </div>
+
+  <script src="/static/js/theme.js" defer></script>
+  <script>
+    function toggleForm() {
+      const loginContainer = document.getElementById("login-container");
+      const registerContainer = document.getElementById("register-container");
+      loginContainer.style.display = loginContainer.style.display === "none" ? "block" : "none";
+      registerContainer.style.display = registerContainer.style.display === "none" ? "block" : "none";
+    }
+
+    function togglePassword(fieldId) {
+      const passwordField = document.getElementById(fieldId);
+      passwordField.type = passwordField.type === "password" ? "text" : "password";
+    }
+
+    async function login() {
+      const email = document.getElementById("login-email").value.trim();
+      const password = document.getElementById("login-password").value.trim();
+      const errorMessage = document.getElementById("login-error-message");
+      const button = document.getElementById("login-button");
+
+      if (!email || !password) {
+        errorMessage.textContent = "Please fill in all fields.";
+        errorMessage.style.display = "block";
+        return;
+      }
+
+      button.classList.add("loading");
+      button.disabled = true;
+
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          sessionStorage.setItem('token', data.token);
+          window.location.href = '/dashboard';
+        } else {
+          const error = await response.json();
+          errorMessage.textContent = error.error || "Login failed";
+          errorMessage.style.display = "block";
+        }
+      } catch (error) {
+        errorMessage.textContent = "Network error. Please try again.";
+        errorMessage.style.display = "block";
+      }
+
+      button.classList.remove("loading");
+      button.disabled = false;
+    }
+
+    async function register() {
+      const email = document.getElementById("register-email").value.trim();
+      const password = document.getElementById("register-password").value.trim();
+      const confirmPassword = document.getElementById("register-confirm-password").value.trim();
+      const errorMessage = document.getElementById("register-error-message");
+      const button = document.getElementById("register-button");
+
+      if (!email || !password || !confirmPassword) {
+        errorMessage.textContent = "Please fill in all fields.";
+        errorMessage.style.display = "block";
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        errorMessage.textContent = "Passwords do not match.";
+        errorMessage.style.display = "block";
+        return;
+      }
+
+      button.classList.add("loading");
+      button.disabled = true;
+
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          sessionStorage.setItem('token', data.token);
+          window.location.href = '/dashboard';
+        } else {
+          const error = await response.json();
+          errorMessage.textContent = error.message || "Registration failed";
+          errorMessage.style.display = "block";
+        }
+      } catch (error) {
+        errorMessage.textContent = "Network error. Please try again.";
+        errorMessage.style.display = "block";
+      }
+
+      button.classList.remove("loading");
+      button.disabled = false;
+    }
+  </script>
+</body>
+</html>

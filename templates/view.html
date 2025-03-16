@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <script src="/static/js/theme.js" defer></script>
     <title>View Expenses</title>
     <style>
         :root {
@@ -10,7 +12,18 @@
             --text-primary: #2c3e50;
             --text-secondary: #6c757d;
             --background: #f8f9fa;
+            --card-background: white;
             --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --category-background: #e9ecef;
+        }
+
+        [data-theme="dark"] {
+          --text-primary: #ffffff;
+          --text-secondary: #a0a0a0;
+          --background: #121212;
+          --card-background: #1e1e1e;
+          --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+          --category-background: #2d2d2d;
         }
 
         body {
@@ -19,6 +32,19 @@
             margin: 0;
             padding: 2rem;
             color: var(--text-primary);
+        }
+
+        .expense-card {
+          background: var(--card-background);
+          padding: 1.5rem;
+          border-radius: 10px;
+          box-shadow: var(--card-shadow);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .category {
+          background: var(--category-background);
+          color: var(--text-secondary);
         }
 
         .container {
@@ -38,18 +64,6 @@
             gap: 1rem;
         }
 
-        .expense-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 10px;
-            box-shadow: var(--card-shadow);
-            transition: transform 0.2s ease;
-            display: grid;
-            grid-template-columns: auto 1fr auto auto;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
         .expense-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -61,30 +75,16 @@
             font-size: 1.1rem;
         }
 
-        .category {
-            padding: 0.3rem 0.8rem;
-            background: #e9ecef;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-
         .description {
             color: var(--text-primary);
         }
 
         .date {
             color: var(--text-secondary);
-            font-size: 0.9rem;
         }
 
         .back-link {
-            display: inline-block;
-            margin-top: 2rem;
             color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.2s ease;
         }
 
         .back-link:hover {
@@ -92,30 +92,44 @@
         }
 
         .no-expenses {
-            text-align: center;
             color: var(--text-secondary);
-            padding: 2rem;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Expense History</h1>
-        <div class="expense-grid">
-            {{if .}}
-                {{range .}}
-                <div class="expense-card">
-                    <span class="amount">${{.Amount}}</span>
-                    <span class="category">{{.Category}}</span>
-                    <span class="description">{{.Description}}</span>
-                    <span class="date">{{.Date}}</span>
-                </div>
-                {{end}}
-            {{else}}
-                <div class="no-expenses">No expenses recorded yet.</div>
-            {{end}}
-        </div>
-        <a href="/" class="back-link">← Back to Dashboard</a>
+  <nav class="main-nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">Expense Tracker</a>
+      <div class="nav-links">
+        <a href="/home">Home</a>
+        <a href="/add">Add Expense</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/view">View Expenses</a>
+        <a href="/report">Reports</a>
+        <a href="/receipts">Receipts</a>
+      </div>
     </div>
+  </nav>
+  <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+  <div class="container">
+    <h1>Expense History</h1>
+    <div class="expense-grid">
+        {{if .}}
+            {{range .}}
+            <div class="expense-card">
+                <span class="amount">${{.Amount}}</span>
+                <span class="category">{{.Category}}</span>
+                <span class="description">{{.Description}}</span>
+                <span class="date">{{.Date}}</span>
+            </div>
+            {{end}}
+        {{else}}
+            <div class="no-expenses">No expenses recorded yet.</div>
+        {{end}}
+    </div>
+    <a href="/" class="back-link">← Back to Dashboard</a>
+  </div>
+
+  {{template "footer.html"}}
 </body>
 </html>

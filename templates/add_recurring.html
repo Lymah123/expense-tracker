@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/theme.css">
+    <script src="/static/js/theme.js"></script>
+    <title>Add Recurring Expense</title>
+    <style>
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+      }
+
+      .form-group input,
+      .form-group select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-radius: 4px;
+        background: var(--card-background);
+        color: var(--text-color);
+      }
+
+      .submit-buttton {
+        background: var(--accent-color);
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .submit-button:hover {
+        background: var(--secondary-color);
+      }
+    </style>
+  </head>
+  <body>
+<form action="/add_recurring" method="post">
+  <div class="form-group">
+    <label for="category">Category:</label>
+    <input type="text" id="category" name="category" required>
+  </div>
+
+  <div class="form-group">
+    <label for="amount">Amount:</label>
+    <input type="number" id="amount" name="amount" step="0.01" required>
+    </div>
+
+  <div class="form-group">
+    <label for="frequency">Frequency:</label>
+    <select id="frequency" name="frequency" required>
+      <option value="daily">Daily</option>
+      <option value="weekly">Weekly</option>
+      <option value="monthly">Monthly</option>
+      <option value="yearly">Yearly</option>
+    </select>
+  </div>
+
+  <button type="submit" class="submit-button">Add Recurring Expense</button>
+  </form>
+
+  {{template "footer.html"}}
+  </body>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/css/theme.css">
+  <script src="/static/js/theme.js" defer></script>
+  <title>Currencies</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+      min-height: 100vh;
+      background: var(--background-color);
+      color: var(--text-color);
+    }
+
+    h1 {
+      color: var(--text-color);
+      margin-bottom: 2rem;
+    }
+
+    #currencyDropdown {
+      width: 300px;
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--card-background);
+      color: var(--text-color);
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    a {
+      color: var(--accent-color);
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    a:hover {
+      background: var(--accent-color);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+  <h1>Available Currencies</h1>
+  <select id="currencyDropdown">
+    {{range .}}
+    <option value="{{.Code}}">{{.Code}} - {{.Symbol}}</option>
+    {{end}}
+  </select>
+  <a href="/">Back to Home</a>
+
+  {{template "footer.html"}}
+</body>
+</html>
