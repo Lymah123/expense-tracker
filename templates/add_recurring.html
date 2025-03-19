@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/theme.css">
-    <script src="/static/js/theme.js"></script>
+    <script src="/static/js/theme.js" defer></script>
     <title>Add Recurring Expense</title>
     <style>
       .form-group {
@@ -43,29 +43,58 @@
     </style>
   </head>
   <body>
-<form action="/add_recurring" method="post">
-  <div class="form-group">
-    <label for="category">Category:</label>
-    <input type="text" id="category" name="category" required>
-  </div>
-
-  <div class="form-group">
-    <label for="amount">Amount:</label>
-    <input type="number" id="amount" name="amount" step="0.01" required>
+    <nav class="main-nav">
+      <div class="nav-container">
+        <a href="/" class="nav-logo">Expense Tracker</a>
+        <div class="nav-links">
+          <a href="/dashboard">Dashboard</a>
+          <a href="/add">Add Expense</a>
+          <a href="/view">View Expenses</a>
+        </div>
+      </div>
+    </nav>
+    <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+    <div class="container">
+      <h1>Add Recurring Expense</h1>
+      <form method="post" action="/recurring/add">
+        <div class="form-group">
+          <label>Amount</label>
+          <input type="number" step="0.01" name="amount" placeholder="Enter amount" required>
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <input type="text" name="category" placeholder="Enter category" required>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" name="description" placeholder="Enter description" required>
+        </div>
+        <div class="form-group">
+          <label>Frequency</label>
+          <select name="frequency" required>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Next Due Date</label>
+          <input type="date" name="next_due_date" required>
+        </div>
+        <div class="form-group">
+          <label>Currency</label>
+          <select name="currency_code" required>
+            {{range .Currencies}}
+            <option value="{{.Code}}" data-symbol="{{.Symbol}}">{{.Code}} - {{.Symbol}}</option>
+            {{end}}
+          </select>
+        </div>
+        <input type="submit" value="Add Recurring Expense">
+      </form>
+      <a href="/recurring" class="back-link">← Back to Recurring Expenses</a>
     </div>
 
-  <div class="form-group">
-    <label for="frequency">Frequency:</label>
-    <select id="frequency" name="frequency" required>
-      <option value="daily">Daily</option>
-      <option value="weekly">Weekly</option>
-      <option value="monthly">Monthly</option>
-      <option value="yearly">Yearly</option>
-    </select>
-  </div>
-
-  <button type="submit" class="submit-button">Add Recurring Expense</button>
-  </form>
-
-  {{template "footer.html"}}
+    {{template "footer.html"}}
   </body>
+</html>

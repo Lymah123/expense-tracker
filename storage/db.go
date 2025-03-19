@@ -2,14 +2,14 @@ package storage
 
 import (
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
+	_ "modernc.org/sqlite"
 	"io"
 	"os"
 	"time"
 )
 
 func InitDB(filepath string) (*sql.DB, error) {
-	db, err := sql.Open("sqlite3", filepath)
+	db, err := sql.Open("sqlite", filepath)
 	if err != nil {
 		return nil, err
 	}
@@ -37,6 +37,45 @@ func InitDB(filepath string) (*sql.DB, error) {
     );`
 	if _, err := db.Exec(budgetsQuery); err != nil {
 		return nil, err
+	}
+
+	// Create currencies table if not exists
+	currenciesQuery := `
+    CREATE TABLE IF NOT EXISTS currencies (
+        code TEXT PRIMARY KEY,
+        symbol TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );`
+	if _, err := db.Exec(currenciesQuery); err != nil {
+		return nil, err
+	}
+
+	// Insert default currencies if table is empty
+	var count int
+	err = db.QueryRow("SELECT COUNT(*) FROM currencies").Scan(&count)
+	if err != nil {
+		return nil, err
+	}
+
+	if count == 0 {
+		defaultCurrencies := []struct {
+			code   string
+			symbol string
+		}{
+			{"USD", "$"},
+			{"EUR", "€"},
+			{"GBP", "£"},
+			{"JPY", "¥"},
+			{"NGN", "₦"},
+		}
+
+		for _, currency := range defaultCurrencies {
+			_, err := db.Exec("INSERT INTO currencies (code, symbol) VALUES (?, ?)",
+				currency.code, currency.symbol)
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	// Create recurring_expenses table if not exists
