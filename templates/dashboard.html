@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/theme.css">
-    <script src="/static/js/theme.js" defer></script>
-    <title>Expense Tracker - Dashboard</title>
+  {{define "title"}}Expense Tracker - Dashboard{{end}}
+
+  {{define "head"}}
+    <!-- <title>Expense Tracker - Dashboard</title> -->
     <style>
         [data-theme="dark"] {
           --background-color: #121212;
@@ -72,8 +68,10 @@
             border-bottom: 1px solid #eee;
         }
     </style>
-</head>
-<body>
+    <link rel="stylesheet" href="/static/css/theme.css">
+    {{end}}
+
+    {{define "body"}}
   <nav class="main-nav">
     <div class="nav-container">
       <a href="/" class="nav-logo">Expense Tracker</a>
@@ -214,6 +212,4 @@
   <script src="/static/js/theme.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  {{template "footer.html"}}
-</body>
-</html>
+{{end}}

@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
-  <link rel="stylesheet" href="/static/css/theme.css">
+ {{define "title"}}Expense Tracker - Login{{end}}
+
+  {{define "head"}}
   <style>
     body {
       display: flex;
@@ -90,8 +86,10 @@
       cursor: not-allowed;
     }
   </style>
-</head>
-<body>
+  <script src="/static/js/theme.js" defer></script>
+  {{end}}
+
+  {{define "body"}}
   <div class="container" id="login-container">
     <h2>Login</h2>
     <input type="email" id="login-email" placeholder="Email"><br>
@@ -226,5 +224,4 @@
       button.disabled = false;
     }
   </script>
-</body>
-</html>
+{{end}}

@@ -1,0 +1,116 @@
+ {{define "title"}}Expense Tracker - Privacy Policy{{end}}
+
+{{define "head"}}
+
+  <!-- <title>Privacy Policy - Expense Tracker</title> -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 30px;
+      background: var(--card-background);
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+    }
+
+    h1, h2 {
+      color: var(--text-primary);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      margin-top: 30px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    p, ul, li {
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .last-updated {
+      text-align: right;
+      font-style: italic;
+      margin-top: 40px;
+      color: var(--text-tertiary);
+      font-size: 0.9rem;
+    }
+  </style>
+  <script src="/static/js/theme.js" defer></script>
+  {{end}}
+  
+  {{define "body"}}
+  <nav class="main-nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">Expense Tracker</a>
+      <div class="nav-links">
+        <a href="/home">Home</a>
+        <a href="/add">Add Expense</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/view">View Expenses</a>
+        <a href="/report">Reports</a>
+        <a href="/receipts">Receipts</a>
+      </div>
+    </div>
+  </nav>
+  <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+
+  <div class="container">
+    <h1>Privacy Policy</h1>
+
+    <p>Expense Tracker is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our service.</p>
+
+    <h2>Information Collection</h2>
+    <p>We collect information that you provide directly to us when you:</p>
+    <ul>
+      <li>Create an account</li>
+      <li>Add financial data such as expenses and receipts</li>
+      <li>Use our features and services</li>
+      <li>Contact customer support</li>
+    </ul>
+
+    <h2>How We Use Your Information</h2>
+    <p>We may use the information we collect from you to:</p>
+    <ul>
+      <li>Provide, maintain, and improve our services</li>
+      <li>Process transactions and send related information</li>
+      <li>Send you technical notices, updates, and administrative messages</li>
+      <li>Respond to your comments, questions, and customer service requests</li>
+    </ul>
+
+    <h2>Data Storage and Security</h2>
+    <p>We implement appropriate technical and organizational measures to protect your personal data against accidental or unlawful destruction, loss, alteration, unauthorized disclosure, or access.</p>
+
+    <h2>Data Retention</h2>
+    <p>We will retain your information for as long as your account is active or as needed to provide you services. We will also retain and use your information as necessary to comply with our legal obligations, resolve disputes, and enforce our agreements.</p>
+
+    <h2>Third-Party Services</h2>
+    <p>Our service may contain links to third-party websites or services that are not owned or controlled by Expense Tracker. We have no control over and assume no responsibility for the content, privacy policies, or practices of any third-party websites or services.</p>
+
+    <h2>Children's Privacy</h2>
+    <p>Our service does not address anyone under the age of 18. We do not knowingly collect personally identifiable information from children under 18.</p>
+
+    <h2>Changes to This Privacy Policy</h2>
+    <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+
+    <h2>Contact Us</h2>
+    <p>If you have any questions about this Privacy Policy, please contact us at privacy@expense-tracker.com.</p>
+
+    <p class="last-updated">Last Updated: May 14, 2025</p>
+  </div>
+
+{{end}}

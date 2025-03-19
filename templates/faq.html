@@ -1,0 +1,109 @@
+ {{define "title"}}Expense Tracker - Frequently Asked Questions{{end}}
+
+{{define "head"}}
+  <!-- <title>Frequently Asked Questions - Expense Tracker</title> -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 30px;
+      background: var(--card-background);
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--text-primary);
+    }
+
+    .faq-item {
+      margin-bottom: 25px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 20px;
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .question {
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+
+    .answer {
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+  </style>
+  <script src="/static/js/theme.js" defer></script>
+{{end}}
+
+{{define "body"}}
+  <nav class="main-nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">Expense Tracker</a>
+      <div class="nav-links">
+        <a href="/home">Home</a>
+        <a href="/add">Add Expense</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/view">View Expenses</a>
+        <a href="/report">Reports</a>
+        <a href="/receipts">Receipts</a>
+      </div>
+    </div>
+  </nav>
+  <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+
+  <div class="container">
+    <h1>Frequently Asked Questions</h1>
+
+    <div class="faq-item">
+      <div class="question">How do I add a new expense?</div>
+      <div class="answer">
+        To add a new expense, click on "Add Expense" in the navigation menu. Fill in the amount, category, description, date, and select the appropriate currency, then click the "Add Expense" button.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="question">Can I track recurring expenses?</div>
+      <div class="answer">
+        Yes, you can set up recurring expenses by navigating to the "Recurring Expenses" section. There you can specify the amount, category, frequency (daily, weekly, monthly, yearly), and the next due date.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="question">How do I view reports of my spending?</div>
+      <div class="answer">
+        Click on the "Reports" link in the navigation menu to access detailed reports and analytics about your spending patterns, categorized expenses, and monthly summaries.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="question">Can I change the currency for my expenses?</div>
+      <div class="answer">
+        Yes, when adding an expense, you can select the currency from the dropdown menu. You can manage available currencies in the "Currencies" section.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="question">How do I attach receipts to my expenses?</div>
+      <div class="answer">
+        Navigate to the "Receipts" section to upload and manage receipt images for your expenses. You can attach receipts to existing expenses or upload them while adding a new expense.
+      </div>
+    </div>
+  </div>
+
+{{end}}

@@ -18,7 +18,7 @@ func AddExpenses(db *sql.DB, expense models.Expense) error {
 
 // GetExpenses retrieves all expenses from the database, ordered by date in descending order.
 func GetExpenses(db *sql.DB) ([]models.Expense, error) {
-	query := `SELECT id, amount, category, description, date FROM expenses ORDER BY date DESC`
+	query := `SELECT Id, amount, category, description, date FROM expenses ORDER BY date DESC`
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func GetExpenses(db *sql.DB) ([]models.Expense, error) {
 
 // GetRecentTransactions retrieves the 5 most recent expenses.
 func GetRecentTransactions(db *sql.DB) ([]models.Expense, error) {
-	query := `SELECT id, amount, category, description, date
+	query := `SELECT Id, amount, category, description, date
               FROM expenses
               ORDER BY date DESC
               LIMIT 5`
@@ -159,7 +159,7 @@ func BulkAddExpensesHandler(db *sql.DB) http.HandlerFunc {
 
 // GenerateReport generates an expense report for a given time period.
 func GenerateReport(db *sql.DB, startDate, endDate string) ([]models.Expense, error) {
-	query := `SELECT id, amount, category, description, date
+	query := `SELECT Id, amount, category, description, date
               FROM expenses
               WHERE date BETWEEN ? AND ?
               ORDER BY date DESC`
@@ -221,12 +221,3 @@ func AddExpenseHandler(db *sql.DB) http.HandlerFunc {
 		w.WriteHeader(http.StatusCreated)
 	}
 }
-
-// func AddExpenses(db *sql.DB, expense models.Expense) error {
-// 	if err := validateExpense(expense); err != nil {
-// 		return err
-// 	}
-// 	query := `INSERT INTO expenses (amount, category, description, date, currency_code) VALUES (?, ?, ?, ?, ?)`
-// 	_, err := db.Exec(query, expense.Amount, expense.Category, expense.Description, expense.Date, expense.CurrencyCode)
-// 	return err
-// }

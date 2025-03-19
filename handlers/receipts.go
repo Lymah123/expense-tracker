@@ -33,7 +33,7 @@ func CreateReceiptsTable(db *sql.DB) error {
 			// Create the table with the correct schema
 			tableQuery := `
 			CREATE TABLE receipts (
-					id INTEGER PRIMARY KEY AUTOINCREMENT,
+					Id INTEGER PRIMARY KEY AUTOINCREMENT,
 					expense_id INTEGER,
 					file_path TEXT NOT NULL,
 					uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -94,7 +94,7 @@ func ReceiptsHandler(db *sql.DB) http.HandlerFunc {
 
 func GetReceipts(db *sql.DB) ([]models.Receipt, error) {
 	rows, err := db.Query(`
-	SELECT id, expense_id, file_path, uploaded_at
+	SELECT Id, expense_id, file_path, uploaded_at
 	FROM receipts
 	ORDER BY uploaded_at DESC
 	`)

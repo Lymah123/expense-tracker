@@ -1,62 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/static/css/theme.css">
-  <script src="/static/js/theme.js" defer></script>
-  <title>Currencies</title>
-  <style>
-    body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-      min-height: 100vh;
-      background: var(--background-color);
-      color: var(--text-color);
-    }
 
-    h1 {
-      color: var(--text-color);
-      margin-bottom: 2rem;
-    }
 
-    #currencyDropdown {
-      width: 300px;
-      padding: 12px;
-      border: 2px solid var(--border-color);
-      border-radius: 8px;
-      background: var(--card-background);
-      color: var(--text-color);
-      font-size: 1rem;
-      margin-bottom: 2rem;
-    }
+<div class="container mt-4">
+    <h2>Manage Currencies</h2>
 
-    a {
-      color: var(--accent-color);
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 4px;
-      transition: all 0.3s ease;
-    }
-
-    a:hover {
-      background: var(--accent-color);
-      color: white;
-    }
-  </style>
-</head>
-<body>
-  <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
-  <h1>Available Currencies</h1>
-  <select id="currencyDropdown">
-    {{range .}}
-    <option value="{{.Code}}">{{.Code}} - {{.Symbol}}</option>
+    {{if .Data.Message}}
+    <div class="alert alert-info">{{.Data.Message}}</div>
     {{end}}
-  </select>
-  <a href="/">Back to Home</a>
 
-  {{template "footer.html"}}
-</body>
-</html>
+    <!-- Add Currency Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>Add New Currency</h4>
+        </div>
+        <div class="card-body">
+            <form action="/currencies/add" method="POST">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="code">Currency Code (e.g., USD)</label>
+                            <input type="text" class="form-control" id="code" name="code" required maxlength="3" pattern="[A-Z]{3}">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="symbol">Currency Symbol (e.g., $)</label>
+                            <input type="text" class="form-control" id="symbol" name="symbol" required maxlength="5">
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary">Add Currency</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Currency List -->
+    <div class="card">
+        <div class="card-header">
+            <h4>Available Currencies</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Symbol</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .Data}}
+                        <tr>
+                            <td>{{.Code}}</td>
+                            <td>{{.Symbol}}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="editCurrency('{{.Code}}', '{{.Symbol}}')">Edit</button>
+                                <form action="/currencies/delete" method="POST" class="d-inline">
+                                    <input type="hidden" name="code" value="{{.Code}}">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this currency?')">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Currency Modal -->
+<div class="modal fade" id="editCurrencyModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Currency</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form action="/currencies/update" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" id="editCode" name="code">
+                    <div class="form-group">
+                        <label for="editSymbol">Currency Symbol</label>
+                        <input type="text" class="form-control" id="editSymbol" name="symbol" required maxlength="5">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function editCurrency(code, symbol) {
+    document.getElementById('editCode').value = code;
+    document.getElementById('editSymbol').value = symbol;
+    $('#editCurrencyModal').modal('show');
+}
+</script>
+

@@ -3,7 +3,6 @@ package utils
 import (
 	"database/sql"
 	"expense-tracker/models"
-	"fmt"
 	"log"
 	"time"
 )
@@ -19,28 +18,27 @@ func ProcessRecurringExpenses(db *sql.DB) {
 
 		for _, expense := range recurringExpenses {
 
-			nextDate := expense.NextDueDate
-
-			if now.After(nextDate) {
+			if now.After(expense.NextDueDate) {
 				err := models.AddExpense(db, expense.Amount, expense.Category, expense.Description, now.Format("2006-01-02"), expense.CurrencyCode)
 				if err != nil {
-					log.Println("Error adding expense:", err)
+					log.Println("Error parsing date:", err)
 					continue
 				}
 
-				// Calculate and directly assign the next due date
-				expense.NextDueDate = getNextDueDate(nextDate, expense.Frequency)
+			}
+
+				// Calculate next due date
+				expense.NextDueDate = getNextDueDate(expense.NextDueDate, expense.Frequency)
 
 				err = models.UpdateRecurringExpense(db, expense)
 				if err != nil {
 					log.Println("Error updating recurring expense:", err)
 				}
 			}
+			// Sleep before the next iteration
+			time.Sleep(24 * time.Hour)
 		}
-
-		time.Sleep(24 * time.Hour)
 	}
-}
 
 func getNextDueDate(currentDate time.Time, frequency string) time.Time {
 	switch frequency {
@@ -55,14 +53,4 @@ func getNextDueDate(currentDate time.Time, frequency string) time.Time {
 	default:
 		return currentDate
 	}
-}
-
-// UpdateExchangeRates fetches latest exchange rates every 24 hours
-func UpdateExchangeRates() {
-	ticker := time.NewTicker(24 * time.Hour)
-	go func() {
-		for range ticker.C {
-			fmt.Println("Updating exchange rates...")
-		}
-	}()
 }

@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/static/css/theme.css">
-  <script src="/static/js/theme.js" defer></script>
-  <title>Receipt Management</title>
+  {{define "title"}}Expense Tracker - Receipt Management{{end}}
+
+  {{define "head"}}
+  <!-- <title>Receipt Management</title> -->
   <style>
     .container {
       max-width: 800px;
@@ -100,8 +96,11 @@
       margin-top: 0.5rem;
     }
   </style>
-</head>
-<body>
+  <link rel="stylesheet" href="/static/css/theme.css">
+  {{end}}
+
+  {{define "body"}}
+
   <nav class="main-nav">
     <div class="nav-container">
       <a href="/" class="nav-logo">Expense Tracker</a>
@@ -119,7 +118,7 @@
   <div class="container">
     <h2>Receipts</h2>
     <ul>
-      {{ range .Receipts }}
+      {{ range .Data.Receipts }}
         <li class="receipt-item">
           <div class="receipt-details">
             <div>ID: {{.Id}}</div>
@@ -151,7 +150,6 @@
     <p id="status"></p>
   </div>
 
-  {{template "footer.html"}}
 
   <script src="/static/js/theme.js"></script>
   <script>
@@ -183,5 +181,4 @@
       }
     }
   </script>
-</body>
-</html>
+  {{end}}

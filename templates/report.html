@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/theme.css">
-    <script src="/static/js/theme.js" defer></script>
-    <title>Generate Report</title>
+{{define "title"}} Expense Tracker - Generate Report {{end}}
+
+{{define "head"}}
+    <!-- <title>Generate Report</title> -->
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -138,8 +134,10 @@
           to { transform: rotate(360deg); }
         }
       </style>
-    </head>
-    <body>
+      <script src="/static/js/theme.js" defer></script>
+      {{end}}
+
+      {{define "body"}}
       <nav class="main-nav">
         <div class="nav-container">
           <a href="/" class="nav-logo">Expense Tracker</a>
@@ -252,7 +250,4 @@
           startDate.value = today.toISOString().slice(0, 7);
         });
       </script>
-
-      {{template "footer.html"}}
-    </body>
-</html>
+      {{end}}

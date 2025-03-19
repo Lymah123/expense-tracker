@@ -2,9 +2,9 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
-	"fmt"
 )
 
 type Expense struct {
@@ -39,29 +39,28 @@ type MonthlyBudget struct {
 
 // These JSON tags are crucial for ensuring that the struct fields are correctly mapped to their respetive keys when the struct is converted to or from JSON, making it easier to work with JSON data.
 
-type Currency struct {
-	Code   string `json:"code"`
-	Symbol string `json:"symbol"`
-}
+// type RecurringExpense struct {
+// 	Id int `json:"id" db:"id"`
+// }
 
-type RecurringExpense struct {
-	Id             int       `json:"id" db:"id"`
-	Amount         float64   `json:"amount" db:"amount"`
-	Category       string    `json:"category" db:"category"`
-	Description    string    `json:"description" db:"description"`
-	Frequency      string    `json:"frequency" db:"frequency"`
-	NextDueDate    time.Time `json:"next_due_date" db:"next_due_date"`
-	CurrencyCode   string    `json:"currency_code" db:"currency"`
-	CurrencySymbol string    `json:"currency_symbol" db:"currency_symbol"`
-	IsActive       bool      `json:"is_active" db:"is_active"`
-	CreatedAt      string    `json:"created_at"`
-}
+// type RecurringExpense struct {
+// 	Id             int       `json:"id" db:"id"`
+// 	Amount         float64   `json:"amount" db:"amount"`
+// 	Category       string    `json:"category" db:"category"`
+// 	Description    string    `json:"description" db:"description"`
+// 	Frequency      string    `json:"frequency" db:"frequency"`
+// 	NextDueDate    time.Time `json:"next_due_date" db:"next_due_date"`
+// 	CurrencyCode   string    `json:"currency_code" db:"currency"`
+// 	CurrencySymbol string    `json:"currency_symbol" db:"currency_symbol"`
+// 	IsActive       bool      `json:"is_active" db:"is_active"`
+// 	CreatedAt      string    `json:"created_at"`
+// }
 
 type Receipt struct {
-	Id        int64    `json:"id"`
-	ExpenseId int64    `json:"expense_id"`
-	FilePath  string `json:"file_path"`
-	UploadedAt  time.Time `json:"uploaded_at"`
+	Id         int64     `json:"id"`
+	ExpenseId  int64     `json:"expense_id"`
+	FilePath   string    `json:"file_path"`
+	UploadedAt time.Time `json:"uploaded_at"`
 }
 
 type ExchangeRate struct {
@@ -83,7 +82,7 @@ func AddExpense(db *sql.DB, amount float64, category, description, date, currenc
 
 // GetExpenses retrieves all expenses from the database.
 func GetExpenses(db *sql.DB) ([]Expense, error) {
-	rows, err := db.Query("SELECT id, amount, category, description, date, currency_code FROM expenses")
+	rows, err := db.Query("SELECT Id, amount, category, description, date, currency_code FROM expenses")
 	if err != nil {
 		return nil, err
 	}
@@ -101,9 +100,50 @@ func GetExpenses(db *sql.DB) ([]Expense, error) {
 }
 
 func CreateExpensesTable(db *sql.DB) error {
+	rows, err := db.Query("PRAGMA table_info(expenses)")
+	if err == nil {
+		defer rows.Close()
+		fmt.Println("Current expenses table schema:")
+		hasColumn := false
+		for rows.Next() {
+			var cid, notnull, pk int
+			var name, type_name string
+			var dfItValue interface{}
+			if err := rows.Scan(&cid, &name, &type_name, &notnull, &dfItValue, &pk); err != nil {
+				fmt.Printf("Error scanning: %v\n", err)
+				continue
+			}
+			fmt.Printf("Column: %s (%s)\n", name, type_name)
+			if name == "currency_code" {
+				hasColumn = true
+			}
+		}
+		fmt.Printf("Has currency_code column: %v\n", hasColumn)
+	}
+	if _, err :=db.Exec("PRAGMA foreign_keys = OFF"); err != nil {
+		return fmt.Errorf("failed to disable foreign keys: %v", err)
+	}
+	defer db.Exec("PRAGMA foreign_keys = ON")
+
+	_, err = db.Exec("DROP TABLE IF EXISTS expenses")
+	if err != nil {
+		return fmt.Errorf("failed to drop expenses table: %v", err)
+	}
+	// Start a transaction to ensure atomicity
+	tx, err := db.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %v", err)
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
 	tableQuery := `
 	CREATE TABLE IF NOT EXISTS expenses (
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		Id INTEGER PRIMARY KEY AUTOINCREMENT,
 		amount REAL NOT NULL CHECK (amount >= 0),
 		category TEXT NOT NULL,
 		description TEXT,
@@ -115,24 +155,22 @@ func CreateExpensesTable(db *sql.DB) error {
 		FOREIGN KEY (currency_code) REFERENCES currencies(code)
 		);`
 
-		_, err := db.Exec(tableQuery)
-		if err != nil {
-			return fmt.Errorf("failed to create expenses table: %v", err)
-		}
+	if _, err = tx.Exec(tableQuery); err != nil {
+		return fmt.Errorf("failed to create expenses table: %v", err)
+	}
 
-		// Create indexes
-		indexQueries := []string{
-			`CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category)`,
-			`CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date)`,
-			`CREATE INDEX IF NOT EXISTS idx_expenses_currency_currency ON expenses(currency_code)`,
-		}
+	// Create indexes
+	indexQueries := []string{
+		`CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category)`,
+		`CREATE INDEX IF NOT EXISTS idx_expenses_date ON expenses(date)`,
+		`CREATE INDEX IF NOT EXISTS idx_expenses_currency_code ON expenses(currency_code)`,
+	}
 
-		for _, query := range indexQueries {
-			_, err := db.Exec(query)
-			if err != nil {
-				return fmt.Errorf("failed to create expenses indexes: %v", err)
-			}
+	for _, query := range indexQueries {
+		if _, err = tx.Exec(query); err != nil {
+			return fmt.Errorf("failed to create expenses indexes: %v", err)
 		}
+	}
 
-		return nil
-		}
+	return tx.Commit()
+}
