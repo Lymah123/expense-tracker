@@ -1,70 +1,111 @@
 # Expense Tracker
 
-This is an expense finance tracker that helps to track expenses and generate monthly reports.
+A comprehensive expense tracking application built with Go, featuring secure authentication, budget management, and detailed financial reporting.
+
+## Features
+
+- Interactive dashboard for expense overview
+- Add and manage expenses with categories
+- Budget tracking with email alerts
+- Digital receipt storage
+- Customizable financial reports
+- Multi-currency support
+- Two-Factor Authentication
+- Email notifications
 
 ## Prerequisites
 
-- Go 1.23.4 or later
-- GCC (for CGO support)
-- MSYS2 (for Windows users)
+- Go 1.6+
+- SQLite3
+- SendGrid API key
+- Firebase credentials
 
 ## Installation
 
-1. **Clone the repository**:
-   ```sh
-   git clone https://github.com/yourusername/expense-tracker.git
-   cd expense-tracker
+1. Clone and enter the repository:
+
+```
+git clone https://github.com/yourusername/expense-tracker.git
+cd expense-tracker
 ```
 
-2. **Install dependencies**:
+2. Install dependencies
+```
+go mod download
+```
 
-`go mod tidy`
+3. Create `.env` file
+```
+SENDGRID_API_KEY=your_sendgrid_api_key
+FIREBASE_CREDENTIALS=path_to_firebase_credentials.json
+```
 
-3. **Build the application**:
+4. Build and run
+```
+go build
+./expense-tracker
+```
 
-`go build -o expense-tracker`
+## Project Structure
+
+```
+expense-tracker/
+|__ apihandlers/  # API
+|__ config/ # Configuration
+|__ data/ # Database
+|__ firebase/ # Firebase integration
+|__ handlers/ # HTTP handlers
+|__ middleare/ # Middleware
+|__ models/ # Data models
+|__ reports/ # Report generation
+|__ static/ # Static assets
+|__ templates/ # HTML templates
+|__ utils/ # Utilities
+```
 
 ## Usage
 
-CLI Interface
+1. Start the server: `./expense-tracker`
+2. Access at `http://localhost:8080`
+3. Register/login to begin tracking expenses
 
-1. Set environment variables(Winddows):
-```
-$env:CGO_ENABLED = "1"
-$env:Path += ";C:\msys64\mingw64\bin"
-```
+## Key Features
 
-2. Run the application:
-`./expense-tracker`
+### Dashboard
+- Expense summaries
+- Budget progress
+- Recent transactions
 
-3. Interact with the CLI:
- - Choose an option from tthe menu:
-    1. Add an expense
-    2. View expenses
-    3. Generate monthly report
-    4. Exit
+### Expense Management
 
-## Example
+- Add expenses with categories
+- Upload receipts
+- View history
+- Export data
 
-Expense Tracker
+### Budget Tracking
+- Ste monthly budgets
+- Email alerts
+- Category tracking
 
-Choose an option:
-1. Add expense
-2. View expense
-3. Generate monthly report
-4. Exit
+### Reports
+- Custom report generation
+- Multiple export formats
+- Spending trends
+- Category analysis
 
-Follow the prompts to add expenses, vew expenses, generate reports, and exit the application.
+## Security
 
+- Two Factor Authentication
+- Secure password handling
+- Session management
+- Role-based access
+- Input validation
 
-# Web Interface
+## License
 
-1. Run the web server:
+MIT License - See [LICENSE](LICENSE) for details.
 
-`go run main.go`
+## Support
 
-2. Access the web interface:
-  - Open your web browser and go to `http://localhost:8080`.
-
-3. Interact with the web interface:
-  - Use the web interface to add expenses, view expenses, and generate monthly reports.
+For support, please open an issue in the GutHub repository.
