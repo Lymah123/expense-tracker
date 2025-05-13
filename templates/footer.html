@@ -1,47 +1,125 @@
+<!-- Footer -->
 <footer class="footer">
-  <div class="footer-container">
-      <p>&copy; 2025 Expense Tracker. All rights reserved.</p>
-      <div class="footer-links">
-          <a href="/privacy">Privacy Policy</a>
-          <a href="/terms">Terms of Service</a>
-          <a href="/contact">Contact Us</a>
-      </div>
-  </div>
+    <div class="footer-content">
+        <div class="footer-section">
+            <h3>Core Features</h3>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+                <li><a href="/add">Add Expense</a></li>
+                <li><a href="/view">View Expenses</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3>Additional Features</h3>
+            <ul>
+                <li><a href="/recurring">Recurring Expenses</a></li>
+                <li><a href="/receipts">Receipts</a></li>
+                <li><a href="/report">Reports</a></li>
+                <li><a href="/currencies">Currencies</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3>Account</h3>
+            <ul>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/setup-2fa">Setup 2FA</a></li>
+                <li><a href="/settings">Settings</a></li>
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-section">
+            <h3>Help & Support</h3>
+            <ul>
+                <li><a href="/faq">FAQ</a></li>
+                <li><a href="/contact">Contact Us</a></li>
+                <li><a href="/privacy">Privacy Policy</a></li>
+                <li><a href="/terms">Terms of Service</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2025 Expense Tracker. All rights reserved.</p>
+    </div>
 </footer>
+
 <style>
-  .footer {
-      background: var(--card-background);
-      padding: 1rem 2rem;
-      box-shadow: var(--card-shadow);
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      z-index: 1000;
-      text-align: center;
-  }
+.footer {
+    background: var(--card-background);
+    padding: 3rem 0 1rem 0;
+    margin-top: 4rem;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
 
-  .footer-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-  }
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    padding: 0 2rem;
+}
 
-  .footer-links {
-      display: flex;
-      gap: 1rem;
-  }
+.footer-section {
+    margin-bottom: 2rem;
+}
 
-  .footer-links a {
-      color: var(--text-color);
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      transition: background-color 0.3s ease;
-  }
+.footer-section h3 {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
 
-  .footer-links a:hover {
-      background: var(--background-color);
-  }
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 0.5rem;
+}
+
+.footer-section ul li a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s ease;
+}
+
+.footer-section ul li a:hover {
+    color: var(--primary-color);
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.footer-bottom p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+
+    .footer-section {
+        text-align: center;
+    }
+}
 </style>
