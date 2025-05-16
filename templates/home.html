@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/theme.css">
-    <script src="/static/js/theme.js" defer></script>
-    <title>Expense Tracker - Welcome</title>
+  {{define "title"}}Expense Tracker - Home{{end}}
+
+  {{define "head"}}
+    <!-- <title>Expense Tracker - Welcome</title> -->
     <style>
         :root {
             --primary-color: #4CAF50;
@@ -224,8 +220,10 @@
             background-color: var(--card-background);
         }
     </style>
-</head>
-<body>
+    <script src="/static/js/theme.js" defer></script>
+    {{end}}
+
+    {{define "body"}}
     <!-- Navigation Bar -->
     <nav class="main-nav">
         <div class="nav-container">
@@ -287,7 +285,7 @@
     </div>
 
     <!-- Footer Template -->
-    {{template "footer.html"}}
+
 
     <!-- JavaScript for Theme Toggle -->
     <script>
@@ -319,5 +317,4 @@
             }
         }
     </script>
-</body>
-</html>
+{{end}}

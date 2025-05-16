@@ -221,12 +221,3 @@ func AddExpenseHandler(db *sql.DB) http.HandlerFunc {
 		w.WriteHeader(http.StatusCreated)
 	}
 }
-
-// func AddExpenses(db *sql.DB, expense models.Expense) error {
-// 	if err := validateExpense(expense); err != nil {
-// 		return err
-// 	}
-// 	query := `INSERT INTO expenses (amount, category, description, date, currency_code) VALUES (?, ?, ?, ?, ?)`
-// 	_, err := db.Exec(query, expense.Amount, expense.Category, expense.Description, expense.Date, expense.CurrencyCode)
-// 	return err
-// }

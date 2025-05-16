@@ -1,0 +1,302 @@
+ {{define "title"}}Expense Tracker - Contact Us{{end}}
+
+  {{define "head"}}
+  <script src="/static/js/theme.js" defer></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 30px;
+      background: var(--card-background);
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--text-primary);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--label-color);
+      font-weight: 500;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--input-background);
+      color: var(--text-color);
+      font-family: inherit;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: background 0.3s;
+      width: 100%;
+    }
+
+    button:hover {
+      background: var(--hover-color);
+    }
+
+    .contact-info {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .contact-info h2 {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      color: var(--text-primary);
+    }
+
+    .contact-detail {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      color: var(--text-secondary);
+    }
+
+  .hidden-select {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
+
+  .custom-select {
+    position: relative;
+    width: 100%;
+  }
+
+  .selected-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--input-background);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+  }
+
+    .selected-option:hover {
+    border-color: var(--primary-color);
+  }
+
+  .selected-option::after {
+    content: "▼";
+    font-size: 0.8rem;
+    transition: transform 0.3s;
+  }
+
+  .selected-option.open::after {
+    transform: rotate(180deg);
+  }
+
+  .options-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border: 2px solid var(--primary-color);
+    border-radius: 0 0 8px 8px;
+    background: var(--input-background);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 999;
+    display: none;
+  }
+
+  .options-list.show {
+    display: block;
+  }
+
+  .option-item {
+    padding: 12px;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: background-color 0.2s ease;
+  }
+
+  .option-item:hover {
+    background-color: var(--primary-color);
+    color: white;
+  }
+</style>
+  <script src="/static/js/theme.js" defer></script>
+  {{end}}
+
+  {{define "body"}}
+  <nav class="main-nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">Expense Tracker</a>
+      <div class="nav-links">
+        <a href="/home">Home</a>
+        <a href="/add">Add Expense</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/view">View Expenses</a>
+        <a href="/report">Reports</a>
+        <a href="/receipts">Receipts</a>
+      </div>
+    </div>
+  </nav>
+  <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+
+  <div class="container">
+    <h1>Contact Us</h1>
+
+    <form action="/contact/submit" method="post">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <select id="subject" name="subject">
+          <option value="general">General Inquiry</option>
+          <option value="support">Technical Support</option>
+          <option value="feedback">Feedback</option>
+          <option value="feature">Feature Request</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Your Message</label>
+        <textarea id="message" name="message" required></textarea>
+      </div>
+
+      <button type="submit">Send Message</button>
+    </form>
+
+    <div class="contact-info">
+      <h2>Other Ways to Reach Us</h2>
+
+      <div class="contact-detail">
+        <strong>Email: </strong>&nbsp;support@expense-tracker.com
+      </div>
+
+      <div class="contact-detail">
+        <strong>Phone: </strong>&nbsp;+1 (555) 123-4567
+      </div>
+
+      <div class="contact-detail">
+        <strong>Address: </strong>&nbsp;123 Finance Street, Budget City, BC 12345
+      </div>
+
+      <div class="contact-detail">
+        <strong>Hours: </strong>&nbsp;Monday-Friday, 9AM-5PM EST
+      </div>
+    </div>
+  </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Get the subject select element
+  const originalSelect = document.getElementById('subject');
+  if (!originalSelect) return;
+
+  // Create custom dropdown elements
+  const customSelect = document.createElement('div');
+  customSelect.className = 'custom-select';
+
+  const selectedOption = document.createElement('div');
+  selectedOption.className = 'selected-option';
+  selectedOption.textContent = originalSelect.options[originalSelect.selectedIndex]?.textContent || 'Select subject';
+
+  const optionsList = document.createElement('ul');
+  optionsList.className = 'options-list';
+
+  // Hide the original select
+  originalSelect.classList.add('hidden-select');
+
+  // Add the options to our custom dropdown
+  Array.from(originalSelect.options).forEach(option => {
+    const optionItem = document.createElement('li');
+    optionItem.className = 'option-item';
+    optionItem.textContent = option.textContent;
+    optionItem.dataset.value = option.value;
+
+    // Handle option selection
+    optionItem.addEventListener('click', function() {
+      selectedOption.textContent = this.textContent;
+      originalSelect.value = this.dataset.value;
+      optionsList.classList.remove('show');
+      selectedOption.classList.remove('open');
+    });
+
+    optionsList.appendChild(optionItem);
+  });
+
+  // Toggle dropdown visibility
+  selectedOption.addEventListener('click', function(e) {
+    e.stopPropagation();
+    optionsList.classList.toggle('show');
+    this.classList.toggle('open');
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function() {
+    optionsList.classList.remove('show');
+    selectedOption.classList.remove('open');
+  });
+
+  // Add elements to the DOM
+  customSelect.appendChild(selectedOption);
+  customSelect.appendChild(optionsList);
+  originalSelect.parentNode.insertBefore(customSelect, originalSelect.nextSibling);
+});
+</script>
+{{end}}

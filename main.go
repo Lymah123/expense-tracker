@@ -22,8 +22,8 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
-	_ "modernc.org/sqlite"
 	"github.com/pquerna/otp/totp"
+	_ "modernc.org/sqlite"
 )
 
 var (
@@ -43,10 +43,26 @@ func init() {
 		log.Fatalf("Failed to create data directory: %v", err)
 	}
 
+	// Initialize templates map
 	templates = make(map[string]*template.Template)
-	templateFiles := []string{"dashboard", "home", "add", "view", "report", "currencies", "receipts", "footer", "login", "register"}
+
+	// Fix: Combined declaration and assignment
+	defaultTemplates, err := template.ParseFiles("templates/base.html", "templates/defaults.html", "templates/footer.html")
+	if err != nil {
+		log.Fatal("Failed to parse default templates:", err)
+	}
+
+	templateFiles := []string{"dashboard", "home", "add", "view", "report", "currencies", "receipts", "login", "register", "faq", "contact", "privacy", "terms"}
+
 	for _, tmpl := range templateFiles {
-		t, err := template.ParseFiles("templates/"+tmpl+".html", "templates/footer.html")
+
+		t, err := defaultTemplates.Clone()
+		if err != nil {
+			log.Fatalf("Failed to clone template for %s: %v", tmpl, err)
+		}
+
+		// Reuse err variable
+		t, err = t.ParseFiles("templates/" + tmpl + ".html")
 		if err != nil {
 			log.Fatalf("Failed to parse template %s: %v", tmpl, err)
 		}
@@ -63,11 +79,6 @@ func main() {
 		log.Fatalf("Error opening database: %v", err)
 	}
 	defer db.Close()
-
-	// // Initialize database tables after connection is established
-	// if err := handlers.CreateReceiptsTable(db); err != nil {
-	// 	log.Fatalf("Failed to create receipts table: %v", err)
-	// }
 
 	// Test the database connection
 	if err = db.Ping(); err != nil {
@@ -104,7 +115,7 @@ func main() {
 	}
 
 	// Create necessary tables
-	 if err := models.CreateCurrenciesTable(db); err != nil {
+	if err := models.CreateCurrenciesTable(db); err != nil {
 		log.Fatalf("Failed to create currencies table: %v", err)
 	}
 	if err := createBudgetTable(db); err != nil {
@@ -146,6 +157,20 @@ func main() {
 	}()
 
 	r := mux.NewRouter()
+
+	// Handlers for footer navigations
+	r.HandleFunc("/faq", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "faq", nil)
+	})
+	r.HandleFunc("/contact", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "contact", nil)
+	})
+	r.HandleFunc("/privacy", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "privacy", nil)
+	})
+	r.HandleFunc("/terms", func(w http.ResponseWriter, r *http.Request) {
+		renderTemplate(w, "terms", nil)
+	})
 
 	// Public routes
 	r.HandleFunc("/api/login", middleware.LoginHandler).Methods("POST")
@@ -267,10 +292,20 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 		http.Error(w, "Template not found", http.StatusInternalServerError)
 		return
 	}
-	err := t.Execute(w, data)
+
+	var templateData struct {
+		PageName string
+		Data     interface{}
+	}
+
+	templateData.PageName = tmpl
+	templateData.Data = data
+
+	err := t.ExecuteTemplate(w, "base", templateData)
 	if err != nil {
 		log.Printf("Template execution error: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -400,7 +435,8 @@ func addExpensePageHandler(w http.ResponseWriter, r *http.Request) {
 	currencies, err := models.GetCurrencies(db)
 	if err != nil {
 		log.Printf("Currency error: %v", err)
-		http.Error(w, "Error retrieving currencies", http.StatusInternalServerError); return
+		http.Error(w, "Error retrieving currencies", http.StatusInternalServerError)
+		return
 	}
 	renderTemplate(w, "add", currencies)
 }
@@ -463,9 +499,15 @@ type ReportData struct {
 }
 
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "login", nil)
+	data := map[string]interface{}{
+		"PageName": "login",
+	}
+	renderTemplate(w, "login", data)
 }
 
 func registerHandler(w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "register", nil)
+	data := map[string]interface{}{
+		"PageName": "register",
+	}
+	renderTemplate(w, "register", data)
 }

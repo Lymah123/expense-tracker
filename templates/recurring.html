@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/theme.css">
-    <script src="/static/js/theme.js" defer></script>
-    <title>Recurring Expenses</title>
+{{define "title"}}Expense Tracker - Recurring Expenses {{end}}
+
+{{define "head"}}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- <title>Recurring Expenses</title> -->
     <style>
         .container {
             max-width: 1200px;
@@ -184,8 +181,10 @@
             }
         }
     </style>
-</head>
-<body>
+    <script src="/static/js/theme.js" defer></script>
+    {{end}}
+
+    {{define "body"}}
     <nav class="main-nav">
         <div class="nav-container">
             <a href="/" class="nav-logo">Expense Tracker</a>
@@ -239,10 +238,4 @@
             {{end}}
         </div>
     </div>
-
-    {{template "footer.html"}}
-
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-</body>
-</html>
+    {{end}}

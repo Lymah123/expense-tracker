@@ -1,10 +1,10 @@
-{{template "header" .}}
+
 
 <div class="container mt-4">
     <h2>Manage Currencies</h2>
 
-    {{if .Message}}
-    <div class="alert alert-info">{{.Message}}</div>
+    {{if .Data.Message}}
+    <div class="alert alert-info">{{.Data.Message}}</div>
     {{end}}
 
     <!-- Add Currency Form -->
@@ -51,7 +51,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {{range .Currencies}}
+                        {{range .Data}}
                         <tr>
                             <td>{{.Code}}</td>
                             <td>{{.Symbol}}</td>
@@ -106,4 +106,3 @@ function editCurrency(code, symbol) {
 }
 </script>
 
-{{template "footer" .}}

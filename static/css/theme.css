@@ -1,11 +1,20 @@
 :root {
-  --primary-color: #4CAF50;
   --secondary-color: #45a049;
   --accent-color: #2196F3;
   --background-color: #f8f9fa;
   --text-color: #000;
   --card-background: #fff;
   --border-color: #add;
+  --primary-color-dark: #3e8e41;
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --success-color: #28a745;
+  --success-color-dark: #218838;
+  --danger-color: #dc3545;
+  --danger-color-dark: #c82333;
+  --text-secondary-dark: #5a6268;
+  --input-background: #fff;
+  --input-border: #e9ecef;
+  --label-color: #34495e;
 }
 
 [data-theme="dark"] {
@@ -13,6 +22,16 @@
   --text-color: #fff;
   --card-background: #1e1e1e;
   --border-color: #333;
+  --primary-color-dark: #367c39;
+  --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --success-color: #1e7e34;
+  --success-color-dark: #176b2b;
+  --danger-color: #bd2130;
+  --danger-color-dark: #a71d2a;
+  --text-secondary-dark: #848c94;
+  --input-background: #2d2d2d;
+  --input-border: #404040;
+  --label-color: #e0e0e0;
 }
 
 .card {
@@ -90,22 +109,118 @@ body {
   background: var(--background-color);
 }
 
-/* Landing page styles
-.landing-container { }
-.hero-section { }
+/* Professional Footer Styling */
+.footer {
+    background-color: var(--card-background);
+    border-top: 1px solid var(--border-color);
+    padding: 3rem 0 1.5rem;
+    margin-top: 4rem;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
+}
 
-/* Add Expense Page Styles */
-/* .expense-form { }
-.form-controls { }
+.footer-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
 
-/* View Expenses Page Styles */
-/* .expenses-list { }
-.filter-controls { }
+.footer-columns {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
 
-/* Reports Page Styles */
-/* .report-container { }
-.chart-section { }
+.footer-column {
+    flex: 1;
+    min-width: 160px;
+}
 
-/* Receipts Page Styles */
-/* .receipts-gallery { }
-.upload-section { } */
+.footer-column h3 {
+    color: var(--text-color);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+.footer-column h3:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    height: 2px;
+    width: 30px;
+    background-color: var(--primary-color);
+}
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer-column ul li {
+    margin-bottom: 0.8rem;
+}
+
+.footer-column ul li a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+    display: block;
+    padding: 2px 0;
+}
+
+.footer-column ul li a:hover {
+    color: var(--primary-color);
+    transform: translateX(3px);
+}
+
+.footer-divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 2rem 0 1.5rem;
+    opacity: 0.6;
+}
+
+.footer-bottom {
+    text-align: center;
+}
+
+.footer-bottom p {
+    color: var(--text-secondary-dark);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+/* Dark mode specifics for footer */
+[data-theme="dark"] .footer {
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .footer-column {
+        min-width: 40%;
+        margin-bottom: 2rem;
+    }
+
+    .footer-columns {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-column {
+        min-width: 100%;
+    }
+
+    .footer {
+        padding: 2rem 0 1rem;
+    }
+}

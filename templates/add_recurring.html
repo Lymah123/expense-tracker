@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/theme.css">
-    <script src="/static/js/theme.js" defer></script>
-    <title>Add Recurring Expense</title>
+   {{define "title"}}Expense Tracker - Add Recurring Expense{{end}}
+
+   {{define "head"}}
+    <!-- <title>Add Recurring Expense</title> -->
     <style>
       .form-group {
         margin-bottom: 1.5rem;
@@ -27,7 +23,7 @@
         color: var(--text-color);
       }
 
-      .submit-buttton {
+      .submit-button {
         background: var(--accent-color);
         color: white;
         padding: 0.8rem 1.5rem;
@@ -41,8 +37,10 @@
         background: var(--secondary-color);
       }
     </style>
-  </head>
-  <body>
+    <script src="/static/js/theme.js" defer></script>
+    {{end}}
+
+    {{define "body"}}
     <nav class="main-nav">
       <div class="nav-container">
         <a href="/" class="nav-logo">Expense Tracker</a>
@@ -95,6 +93,4 @@
       <a href="/recurring" class="back-link">← Back to Recurring Expenses</a>
     </div>
 
-    {{template "footer.html"}}
-  </body>
-</html>
+ {{end}}

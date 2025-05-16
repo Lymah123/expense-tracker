@@ -1,125 +1,184 @@
+{{define "footer"}}
 <!-- Footer -->
 <footer class="footer">
-    <div class="footer-content">
-        <div class="footer-section">
-            <h3>Core Features</h3>
-            <ul>
-                <li><a href="/home">Home</a></li>
-                <li><a href="/dashboard">Dashboard</a></li>
-                <li><a href="/add">Add Expense</a></li>
-                <li><a href="/view">View Expenses</a></li>
-            </ul>
+    <div class="footer-container">
+        <div class="footer-columns">
+            <div class="footer-column">
+                <h3>Core Features</h3>
+                <ul>
+                    <li><a href="/home">Home</a></li>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/add">Add Expense</a></li>
+                    <li><a href="/view">View Expenses</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Additional Features</h3>
+                <ul>
+                    <li><a href="/recurring">Recurring Expenses</a></li>
+                    <li><a href="/receipts">Receipts</a></li>
+                    <li><a href="/report">Reports</a></li>
+                    <li><a href="/currencies">Currencies</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Account</h3>
+                <ul>
+                    <li><a href="/profile">Profile</a></li>
+                    <li><a href="/setup-2fa">Setup 2FA</a></li>
+                    <li><a href="/settings">Settings</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Help & Support</h3>
+                <ul>
+                    <li><a href="/faq">FAQ</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                </ul>
+            </div>
         </div>
 
-        <div class="footer-section">
-            <h3>Additional Features</h3>
-            <ul>
-                <li><a href="/recurring">Recurring Expenses</a></li>
-                <li><a href="/receipts">Receipts</a></li>
-                <li><a href="/report">Reports</a></li>
-                <li><a href="/currencies">Currencies</a></li>
-            </ul>
-        </div>
+        <div class="footer-divider"></div>
 
-        <div class="footer-section">
-            <h3>Account</h3>
-            <ul>
-                <li><a href="/profile">Profile</a></li>
-                <li><a href="/setup-2fa">Setup 2FA</a></li>
-                <li><a href="/settings">Settings</a></li>
-                <li><a href="/logout">Logout</a></li>
-            </ul>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Expense Tracker. All rights reserved.</p>
         </div>
-
-        <div class="footer-section">
-            <h3>Help & Support</h3>
-            <ul>
-                <li><a href="/faq">FAQ</a></li>
-                <li><a href="/contact">Contact Us</a></li>
-                <li><a href="/privacy">Privacy Policy</a></li>
-                <li><a href="/terms">Terms of Service</a></li>
-            </ul>
-        </div>
-    </div>
-    <div class="footer-bottom">
-        <p>&copy; 2025 Expense Tracker. All rights reserved.</p>
     </div>
 </footer>
 
 <style>
+/* Professional Footer Styling with Consistent Theme Support */
 .footer {
-    background: var(--card-background);
-    padding: 3rem 0 1rem 0;
+    background-color: var(--card-background);
+    border-top: 1px solid var(--border-color);
+    padding: 3rem 0 1.5rem;
     margin-top: 4rem;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
 }
 
-.footer-content {
+.footer-container {
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
     padding: 0 2rem;
 }
 
-.footer-section {
-    margin-bottom: 2rem;
+.footer-columns {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 2rem;
 }
 
-.footer-section h3 {
+.footer-column {
+    flex: 1;
+    min-width: 160px;
+}
+
+.footer-column h3 {
     color: var(--text-primary);
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
+    font-size: 1rem;
     font-weight: 600;
+    margin-bottom: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
 }
 
-.footer-section ul {
+.footer-column h3:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -8px;
+    height: 2px;
+    width: 30px;
+    background-color: var(--primary-color);
+}
+
+.footer-column ul {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.footer-section ul li {
-    margin-bottom: 0.5rem;
+.footer-column ul li {
+    margin-bottom: 0.8rem;
 }
 
-.footer-section ul li a {
-    color: var(--text-secondary);
+.footer-column ul li a {
+    color: var(--text-color);
     text-decoration: none;
     font-size: 0.9rem;
-    transition: color 0.2s ease;
+    transition: all 0.2s ease;
+    display: block;
+    padding: 2px 0;
 }
 
-.footer-section ul li a:hover {
+.footer-column ul li a:hover {
     color: var(--primary-color);
+    transform: translateX(3px);
+}
+
+.footer-divider {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 2rem 0 1.5rem;
+    opacity: 0.6;
 }
 
 .footer-bottom {
     text-align: center;
-    padding-top: 2rem;
-    margin-top: 2rem;
-    border-top: 1px solid var(--border-color);
 }
 
 .footer-bottom p {
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    margin: 0;
 }
 
-@media (max-width: 768px) {
-    .footer-content {
-        grid-template-columns: repeat(2, 1fr);
+/* Dark mode specifics */
+[data-theme="dark"] .footer {
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="dark"] .footer-column h3 {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .footer-column ul li a {
+    color: #e0e0e0;
+}
+
+[data-theme="dark"] .footer-column ul li a:hover {
+    color: var(--primary-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .footer-column {
+        min-width: 40%;
+        margin-bottom: 2rem;
+    }
+
+    .footer-columns {
+        justify-content: flex-start;
     }
 }
 
-@media (max-width: 480px) {
-    .footer-content {
-        grid-template-columns: 1fr;
+@media (max-width: 576px) {
+    .footer-column {
+        min-width: 100%;
     }
 
-    .footer-section {
-        text-align: center;
+    .footer {
+        padding: 2rem 0 1rem;
     }
 }
 </style>
+{{end}}

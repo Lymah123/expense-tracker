@@ -1,0 +1,18 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{template "title" .}}</title>
+    <link rel="stylesheet" href="/static/css/theme.css">
+    {{template "head" .}}
+</head>
+<body>
+    {{template "body" .}}
+
+    {{if not (or (eq .PageName "login") (eq .PageName "register"))}}
+    {{template "footer" .}}
+    {{end}}
+</body>
+</html>
+{{end}}

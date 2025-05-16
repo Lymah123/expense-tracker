@@ -1,0 +1,116 @@
+  {{define "title"}} Expense Tracker - Terms of Service{{end}}
+
+  {{define "head"}}
+  <!-- <title>Terms of Service - Expense Tracker</title> -->
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--background-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 30px;
+      background: var(--card-background);
+      border-radius: 12px;
+      box-shadow: var(--card-shadow);
+    }
+
+    h1, h2 {
+      color: var(--text-primary);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      margin-top: 30px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    p, ul, li {
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .last-updated {
+      text-align: right;
+      font-style: italic;
+      margin-top: 40px;
+      color: var(--text-tertiary);
+      font-size: 0.9rem;
+    }
+
+    .acceptance {
+      background: var(--card-background-alt);
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary-color);
+      margin: 20px 0;
+    }
+  </style>
+  <script src="/static/js/theme.js" defer></script>
+  {{end}}
+
+  {{define "body"}}
+  <nav class="main-nav">
+    <div class="nav-container">
+      <a href="/" class="nav-logo">Expense Tracker</a>
+      <div class="nav-links">
+        <a href="/home">Home</a>
+        <a href="/add">Add Expense</a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/view">View Expenses</a>
+        <a href="/report">Reports</a>
+        <a href="/receipts">Receipts</a>
+      </div>
+    </div>
+  </nav>
+  <button id="theme-toggle" class="theme-toggle" onclick="toggleTheme()">🌙 Dark Mode</button>
+
+  <div class="container">
+    <h1>Terms of Service</h1>
+
+    <div class="acceptance">
+      <p>By accessing or using the Expense Tracker service, you agree to be bound by these Terms of Service. If you disagree with any part of the terms, you may not access the service.</p>
+    </div>
+
+    <h2>1. Use of the Service</h2>
+    <p>Expense Tracker provides tools for personal financial management. You are responsible for maintaining the confidentiality of your account and for all activities that occur under your account. You agree to notify us immediately of any unauthorized use of your account.</p>
+
+    <h2>2. User Content</h2>
+    <p>Our service allows you to post, link, store, share and otherwise make available certain information, text, graphics, or other material. You retain any rights to any content you submit, post or display on or through the service.</p>
+
+    <h2>3. Accounts</h2>
+    <p>When you create an account with us, you must provide accurate, complete, and current information. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our Service.</p>
+
+    <h2>4. Intellectual Property</h2>
+    <p>The Service and its original content, features, and functionality are and will remain the exclusive property of Expense Tracker and its licensors. The Service is protected by copyright, trademark, and other laws.</p>
+
+    <h2>5. Termination</h2>
+    <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the Service will immediately cease.</p>
+
+    <h2>6. Limitation of Liability</h2>
+    <p>In no event shall Expense Tracker, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.</p>
+
+    <h2>7. Changes</h2>
+    <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. What constitutes a material change will be determined at our sole discretion. By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms.</p>
+
+    <h2>8. Governing Law</h2>
+    <p>These Terms shall be governed and construed in accordance with the laws of the United States, without regard to its conflict of law provisions.</p>
+
+    <h2>9. Contact Us</h2>
+    <p>If you have any questions about these Terms, please contact us at terms@expense-tracker.com.</p>
+
+    <p class="last-updated">Last Updated: May 14, 2025</p>
+  </div>
+
+{{end}}

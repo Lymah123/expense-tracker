@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register</title>
-  <link rel="stylesheet" href="/static/css/theme.css">
+{{define "title"}} Expense Tracker - Register {{end}}
+
+{{define "head"}}
+  <!-- <title>Register</title> -->
   <style>
     body {
       display: flex;
@@ -63,8 +60,11 @@
       display: inline-block;
     }
   </style>
-</head>
-<body>
+  <script src="/static/js/theme.js" defer></script>
+{{end}}
+
+{{define "body"}}
+
   <div class="container">
     <h2>Register</h2>
     <input type="email" id="register-email" placeholder="Email"><br>
@@ -73,7 +73,6 @@
     <div class="toggle-link" onclick="redirectToLogin()">Already have an account? Login</div>
   </div>
 
-  <script src="/static/js/theme.js" defer></script>
   <script>
     async function register() {
       const email = document.getElementById("register-email").value;
@@ -105,5 +104,4 @@
       window.location.href = '/login';
     }
   </script>
-</body>
-</html>
+{{end}}

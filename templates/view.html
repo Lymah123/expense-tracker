@@ -1,20 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/css/theme.css">
-    <script src="/static/js/theme.js" defer></script>
-    <title>View Expenses</title>
-    <style>
-        :root {
-            --primary-color: #4CAF50;
-            --text-primary: #2c3e50;
-            --text-secondary: #6c757d;
-            --background: #f8f9fa;
-            --card-background: white;
-            --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            --category-background: #e9ecef;
+{{define "title"}}Expense Tracker - View Expenses{{end}}
+
+{{define "head"}}
+<style>
+    :root {
+          --primary-color: #4CAF50;
+          --text-primary: #2c3e50;
+          --text-secondary: #6c757d;
+          --background: #f8f9fa;
+          --card-background: white;
+          --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          --category-background: #e9ecef;
         }
 
         [data-theme="dark"] {
@@ -95,8 +90,9 @@
             color: var(--text-secondary);
         }
     </style>
-</head>
-<body>
+    <script src="/static/js/theme.js" defer></script>
+  {{end}}
+{{define "body"}}
   <nav class="main-nav">
     <div class="nav-container">
       <a href="/" class="nav-logo">Expense Tracker</a>
@@ -115,7 +111,7 @@
     <h1>Expense History</h1>
     <div class="expense-grid">
         {{if .}}
-            {{range .}}
+            {{range .Data}}
             <div class="expense-card">
                 <span class="amount">${{.Amount}}</span>
                 <span class="category">{{.Category}}</span>
@@ -129,7 +125,4 @@
     </div>
     <a href="/" class="back-link">← Back to Dashboard</a>
   </div>
-
-  {{template "footer.html"}}
-</body>
-</html>
+{{end}}
