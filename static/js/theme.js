@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const toggleButton = document.getElementById('theme-toggle');
   if (toggleButton) {
+    toggleButton.addEventListener('click', toggleTheme);
     toggleButton.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
         toggleTheme();

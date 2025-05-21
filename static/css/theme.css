@@ -1,4 +1,8 @@
 :root {
+  --primary-color: #4CAF50;
+  --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
   --secondary-color: #45a049;
   --accent-color: #2196F3;
   --background-color: #f8f9fa;
@@ -18,6 +22,10 @@
 }
 
 [data-theme="dark"] {
+  --primary-color: #4CAF50;
+  --card-shadow: 9 2px 4px rgba(0, 0, 0, 0.25);
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
   --background-color: #121212;
   --text-color: #fff;
   --card-background: #1e1e1e;

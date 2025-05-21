@@ -71,6 +71,7 @@ func init() {
 }
 
 func main() {
+	utils.LoadTemplates()
 
 	// Initialize database connection
 	var err error
@@ -158,6 +159,19 @@ func main() {
 
 	r := mux.NewRouter()
 
+	r.HandleFunc("/debug/templates", func(w http.ResponseWriter, r *http.Request){
+		w.Header().Set("Content-Type", "text/plain")
+		fmt.Fprintln(w, "Templates loaded in main.go:")
+		for name := range templates {
+			fmt.Fprintf(w, "- %s\n", name)
+		}
+
+		fmt.Fprintln(w, "\nTemplates loaded by utils.LoadTemplates():")
+		for _, name := range utils.GetTemplateNames() {
+			fmt.Fprintf(w, "- %s\n", name)
+		}
+	})
+
 	// Handlers for footer navigations
 	r.HandleFunc("/faq", func(w http.ResponseWriter, r *http.Request) {
 		renderTemplate(w, "faq", nil)
@@ -187,7 +201,6 @@ func main() {
 	protected := r.PathPrefix("/api").Subrouter()
 	protected.Use(middleware.AuthMiddleware)
 	protected.HandleFunc("/expenses", apihandlers.GetExpensesAPI(db)).Methods("GET")
-	// Add other protected routes here
 
 	// Other routes
 	r.HandleFunc("/dashboard", dashboardHandler)
@@ -200,7 +213,6 @@ func main() {
 	r.HandleFunc("/setup-2fa", setup2FAHandler)
 	r.HandleFunc("/verify-2fa", verify2FAHandler)
 	r.HandleFunc("/admin", requireRole("admin", adminHandler))
-	// r.HandleFunc("/currencies", currenciesHandler)
 	r.HandleFunc("/report/weekly", generateWeeklyReportHandler)
 	r.HandleFunc("/report/yearly", generateYearlyReportHandler)
 
@@ -227,10 +239,11 @@ func main() {
 	r.HandleFunc("/bulk-add", handlers.BulkAddExpensesHandler(db))
 
 	// Recurring expense routes
+	// r.HandleFunc("/recurring", RecurringExpenseHandler)
 	r.HandleFunc("/recurring", handlers.ListRecurringExpensesHandler(db))
 	r.HandleFunc("/recurring/add", handlers.AddRecurringExpenseHandler(db))
-	r.HandleFunc("/recurring{id}/toggle", handlers.ToggleRecurringExpenseHandler(db))
-	r.HandleFunc("/recurring{id}/delete", handlers.DeleteRecurringExpenseHandler(db))
+	r.HandleFunc("/recurring/{id}/toggle", handlers.ToggleRecurringExpenseHandler(db))
+	r.HandleFunc("/recurring/{id}/delete", handlers.DeleteRecurringExpenseHandler(db))
 	r.HandleFunc("/recurring/{id}", handlers.GetRecurringExpenseHandler(db))
 
 	// Currency routes
@@ -293,13 +306,13 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 		return
 	}
 
-	var templateData struct {
+	templateData := struct {
 		PageName string
 		Data     interface{}
+	}{
+		PageName: tmpl,
+		Data:     data,
 	}
-
-	templateData.PageName = tmpl
-	templateData.Data = data
 
 	err := t.ExecuteTemplate(w, "base", templateData)
 	if err != nil {
@@ -307,6 +320,9 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+
+	templateData.PageName = tmpl
+	templateData.Data = data
 }
 
 func createBudgetTable(db *sql.DB) error {
@@ -510,4 +526,21 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		"PageName": "register",
 	}
 	renderTemplate(w, "register", data)
+}
+
+func RecurringExpenseHandler(w http.ResponseWriter, r *http.Request) {
+	recurringExpenses, err := models.GetRecurringExpenses(db)
+	if err != nil {
+		log.Printf("Error retrieving recurring expenses: %v", err)
+		http.Error(w, "Error retrieving recurring expenses", http.StatusInternalServerError)
+		return
+	}
+
+	data := struct {
+		RecurringExpenses []models.RecurringExpense
+	}{
+		RecurringExpenses: recurringExpenses,
+	}
+
+	renderTemplate(w, "recurring", data)
 }

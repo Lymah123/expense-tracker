@@ -206,8 +206,8 @@
         </div>
 
         <div class="recurring-expenses">
-            {{if .Expenses}}
-                {{range .Expenses}}
+            {{if .Data.Expenses}}
+                {{range .Data.Expenses}}
                 <div class="expense-card">
                     <div class="expense-header">
                         <span class="amount">{{.CurrencySymbol}}{{.Amount}}</span>

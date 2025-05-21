@@ -96,7 +96,7 @@ func ToggleRecurringExpenseHandler(db *sql.DB) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		id, err := strconv.Atoi(vars["Id"])
+		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
 			http.Error(w, "Invalid expense ID", http.StatusBadRequest)
 			return
@@ -131,7 +131,7 @@ func DeleteRecurringExpenseHandler(db *sql.DB) http.HandlerFunc {
 		}
 
 		vars := mux.Vars(r)
-		id, err := strconv.Atoi(vars["Id"])
+		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
 			http.Error(w, "Invalid expense ID", http.StatusBadRequest)
 			return
@@ -151,7 +151,7 @@ func DeleteRecurringExpenseHandler(db *sql.DB) http.HandlerFunc {
 func GetRecurringExpenseHandler(db *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		id, err := strconv.Atoi(vars["Id"])
+		id, err := strconv.Atoi(vars["id"])
 		if err != nil {
 			http.Error(w, "Invalid expense ID", http.StatusBadRequest)
 			return
