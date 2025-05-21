@@ -1,4 +1,4 @@
-   {{define "title"}}Expense Tracker - Add Recurring Expense{{end}}
+   {{define "title"}}Expense Tracker - Recurring Expense{{end}}
 
    {{define "head"}}
     <!-- <title>Add Recurring Expense</title> -->
@@ -83,7 +83,7 @@
         <div class="form-group">
           <label>Currency</label>
           <select name="currency_code" required>
-            {{range .Currencies}}
+            {{range .Data.Currencies}}
             <option value="{{.Code}}" data-symbol="{{.Symbol}}">{{.Code}} - {{.Symbol}}</option>
             {{end}}
           </select>

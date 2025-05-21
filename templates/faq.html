@@ -1,7 +1,6 @@
- {{define "title"}}Expense Tracker - Frequently Asked Questions{{end}}
+{{define "title"}}Expense Tracker - Frequently Asked Questions{{end}}
 
 {{define "head"}}
-  <!-- <title>Frequently Asked Questions - Expense Tracker</title> -->
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -41,11 +40,102 @@
       font-size: 1.1rem;
       color: var(--text-primary);
       margin-bottom: 10px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 5px;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+    }
+
+    .question:hover {
+      background-color: rgba(0,0,0,0.03)
+    }
+
+    .question:after {
+      content: '+';
+      font-size: 1.2rem;
+      transition: transform 0.3s ease;
+    }
+
+    .question.active:after {
+      transform: rotate(45deg);
     }
 
     .answer {
       color: var(--text-secondary);
       line-height: 1.6;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease;
+      padding: 0 10px
+    }
+
+    .answer.show {
+      max-height: 500px;
+      padding: 10px;
+    }
+
+    .answer-content {
+      padding: 5px 0;
+    }
+
+    .filter-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 8px 15px;
+      border-radius: 20px;
+      background: var(--card-background);
+      border: 1px solid var(--border-color);
+      color: var(--text-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover {
+      background: var(--background-color);
+    }
+
+    .filter-btn.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .search-container {
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 15px;
+      border-radius: 25px;
+      border: 1px solid var(--border-color);
+      background: var(--card-background);
+      color: var(--text-color);
+      font-size: 1rem;
+    }
+
+    .no-results {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-secondary);
+    }
+
+    .category-heading {
+      margin-top: 25px;
+      margin-bottom: 15px;
+      font-size: 1.2rem;
+      padding-bottom: 5px;
+      border-bottom: 2px solid var(--primary-color);
+      display: inline-block;
     }
   </style>
   <script src="/static/js/theme.js" defer></script>
@@ -70,40 +160,193 @@
   <div class="container">
     <h1>Frequently Asked Questions</h1>
 
-    <div class="faq-item">
-      <div class="question">How do I add a new expense?</div>
-      <div class="answer">
-        To add a new expense, click on "Add Expense" in the navigation menu. Fill in the amount, category, description, date, and select the appropriate currency, then click the "Add Expense" button.
-      </div>
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="Search FAQs..." id="faq-search">
     </div>
 
-    <div class="faq-item">
-      <div class="question">Can I track recurring expenses?</div>
-      <div class="answer">
-        Yes, you can set up recurring expenses by navigating to the "Recurring Expenses" section. There you can specify the amount, category, frequency (daily, weekly, monthly, yearly), and the next due date.
-      </div>
+    <div class="filter-container" id="category-filters">
     </div>
 
-    <div class="faq-item">
-      <div class="question">How do I view reports of my spending?</div>
-      <div class="answer">
-        Click on the "Reports" link in the navigation menu to access detailed reports and analytics about your spending patterns, categorized expenses, and monthly summaries.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="question">Can I change the currency for my expenses?</div>
-      <div class="answer">
-        Yes, when adding an expense, you can select the currency from the dropdown menu. You can manage available currencies in the "Currencies" section.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="question">How do I attach receipts to my expenses?</div>
-      <div class="answer">
-        Navigate to the "Receipts" section to upload and manage receipt images for your expenses. You can attach receipts to existing expenses or upload them while adding a new expense.
-      </div>
+    <div id="faq-container">
     </div>
   </div>
 
+  <script>
+    const faqData = [
+      {
+        question: "How do I add a new expense?",
+        answer: "To add a new expense, click on \"Add Expense\" in the navigation menu. Fill in the amount, category, description, date, and select the appropriate currency, then click the \"Add Expense\" button.",
+        category: "General"
+      },
+      {
+        question: "Can I track recurring expenses?",
+        answer: "Yes, you can set up recurring expenses by navigating to the \"Recurring Expenses\" section. There you can specify the amount, category, frequency (daily, weekly, monthly, yearly), and the next due date.",
+        category: "Features"
+      },
+      {
+        question: "How do I view reports of my spending?",
+        answer: "Click on the \"Reports\" link in the navigation menu to access detailed reports and analytics about your spending patterns, categorized expenses, and monthly summaries.",
+        category: "Reports"
+      },
+      {
+        question: "Can I change the currency for my expenses?",
+        answer: "Yes, when adding an expense, you can select the currency from the dropdown menu. You can manage available currencies in the \"Currencies\" section.",
+        category: "Currency"
+      },
+      {
+        question: "How do I attach receipts to my expenses?",
+        answer: "Navigate to the \"Receipts\" section to upload and manage receipt images for your expenses. You can attach receipts to existing expenses or upload them while adding a new expense.",
+        category: "Features"
+      },
+      {
+        question: "Is my data secure?",
+        answer: "Yes, we use industry-standard encryption to protect your financial data. All information is stored securely, and we never share your personal details with third parties.",
+        category: "Security"
+      },
+      {
+        question: "Can I export my expense data?",
+        answer: "Yes, you can export your expense data in CSV or PDF format from the Reports section. This is useful for accounting purposes or if you want to analyze your spending in external tools.",
+        category: "Reports"
+      },
+      {
+        question: "How do I set up budget limits?",
+        answer: "Navigate to the Budget section from the dashboard. There, you can set monthly budget limits for different expense categories and track your spending against these limits.",
+        category: "Features"
+      }
+    ];
+
+    document.addEventListener('DOMContentLoaded', function() {
+      setupCategoryFilters();
+      renderFAQs();
+      setupSearch();
+      setupFAQToggle();
+    });
+
+    function setupCategoryFilters() {
+      const filterContainer = document.getElementById('category-filters');
+
+      const categories = [...new Set(faqData.map(item => item.category))];
+
+      const allButton = document.createElement('button');
+      allButton.classList.add('filter-btn', 'active');
+      allButton.setAttribute('data-category', 'all');
+      allButton.textContent = 'All';
+      filterContainer.appendChild(allButton);
+
+      categories.forEach(category => {
+        const button = document.createElement('button');
+        button.classList.add('filter-btn');
+        button.setAttribute('data-category', category);
+        button.textContent = category;
+        filterContainer.appendChild(button);
+      });
+
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+
+          filterButtons.forEach(btn => btn.classList.remove('active'));
+
+          this.classList.add('active');
+
+          const category = this.getAttribute('data-category');
+          renderFAQs(category);
+          setupFAQToggle();
+        });
+      });
+    }
+
+    function renderFAQs(category = 'all', searchTerm = '') {
+      const container = document.getElementById('faq-container');
+      container.innerHTML = '';
+
+      let filteredFAQs = faqData;
+
+      if (category !== 'all') {
+        filteredFAQs = filteredFAQs.filter(item => item.category === category);
+      }
+
+      if (searchTerm) {
+        const term = searchTerm.toLowerCase();
+        filteredFAQs = filteredFAQs.filter(item =>
+          item.question.toLowerCase().includes(term) ||
+          item.answer.toLowerCase().includes(term)
+        );
+      }
+
+      if (filteredFAQs.length === 0) {
+        container.innerHTML = '<div class="no-results">No matching FAQs found.</div>';
+        return;
+      }
+
+      const groupedFAQs = {};
+      filteredFAQs.forEach(item => {
+        if (!groupedFAQs[item.category]) {
+          groupedFAQs[item.category] = [];
+        }
+        groupedFAQs[item.category].push(item);
+      });
+
+      Object.keys(groupedFAQs).forEach(categoryName => {
+
+        if (category === 'all' || searchTerm) {
+          const heading = document.createElement('div');
+          heading.classList.add('category-heading');
+          heading.textContent = categoryName;
+          container.appendChild(heading);
+        }
+
+        groupedFAQs[categoryName].forEach(item => {
+
+          const faqItem = document.createElement('div');
+          faqItem.classList.add('faq-item');
+
+          const question = document.createElement('div');
+          question.classList.add('question');
+          question.textContent = item.question;
+
+          const answer = document.createElement('div');
+          answer.classList.add('answer');
+
+          answer.innerHTML = `<div class="answer-content">${item.answer}</div>`;
+
+          faqItem.appendChild(question);
+          faqItem.appendChild(answer);
+          
+
+          container.appendChild(faqItem);
+        });
+      });
+    }
+
+    function setupSearch() {
+      const searchInput = document.getElementById('faq-search');
+
+      searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.trim();
+        const activeCategory = document.querySelector('.filter-btn.active').getAttribute('data-category');
+        renderFAQs(activeCategory, searchTerm);
+        setupFAQToggle();
+      });
+    }
+
+    function setupFAQToggle() {
+      const questions = document.querySelectorAll('.question');
+      console.log("Setting up FAQ toggle for", questions.length, "questions");
+
+      questions.forEach(question => {
+        const newQuestion = question.cloneNode(true);
+        question.parentNode.replaceChild(newQuestion, question);
+
+        newQuestion.addEventListener('click', function() {
+          console.log("Question clicked:", this.textContent.substring(0, 20) + "...");
+          this.classList.toggle('active');
+          const answer = this.nextElementSibling;
+          console.log("Toggle show class on answer:", answer.textContent.substring(0, 20) + "...");
+          answer.classList.toggle('show');
+          console.log("Answer classes after toggle:", answer.className);
+        });
+      });
+    }
+  </script>
 {{end}}

@@ -6,6 +6,7 @@ import (
 	"expense-tracker/models"
 	"expense-tracker/utils"
 	"net/http"
+	"log"
 )
 
 // CurrencyPageData represents the data needed for the currencies page
@@ -122,6 +123,7 @@ func GetCurrencyHandler(db *sql.DB) http.HandlerFunc {
 		currency, err := models.GetCurrencyByCode(db, code)
 		if err != nil {
 			if err == sql.ErrNoRows {
+				log.Printf("Error fetching currencies: %v", err)
 				http.Error(w, "Currency not found", http.StatusNotFound)
 				return
 			}
