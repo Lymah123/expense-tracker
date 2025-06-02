@@ -1,0 +1,76 @@
+{{define "content"}}
+<div class="container mt-4">
+    <h1>User Profile</h1>
+    {{if .Data.Message}}
+    <div class="alert alert-success">{{.Data.Message}}</div>
+    {{end}}
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Personal Information</h5>
+                    <form action="/profile/update-personal" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{.Data.User.Name}}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{.Data.User.Email}}">
+                        </div>
+                        <div class="mb-3">
+                            <label for="profile_picture" class="form-label">Profile Picture URL</label>
+                            <input type="text" class="form-control" id="profile_picture" name="profile_picture" value="{{if .Data.User.ProfilePicture.Valid}}{{.Data.User.ProfilePicture.String}}{{end}}">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Personal Info</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Preferences</h5>
+                    <form action="/profile/update-preferences" method="post">
+                        <div class="mb-3">
+                            <label for="default_currency" class="form-label">Default Currency</label>
+                            <select class="form-select" id="default_currency" name="default_currency">
+                                {{range .Data.Currencies}}
+                                <option value="{{.Code}}" {{if eq $.Data.User.DefaultCurrency .Code}}selected{{end}}>{{.Name}} ({{.Code}})</option>
+                                {{end}}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="date_format" class="form-label">Date Format</label>
+                            <select class="form-select" id="date_format" name="date_format">
+                                <option value="YYYY-MM-DD" {{if eq .Data.User.DateFormat "YYYY-MM-DD"}}selected{{end}}>YYYY-MM-DD</option>
+                                <option value="MM/DD/YYYY" {{if eq .Data.User.DateFormat "MM/DD/YYYY"}}selected{{end}}>MM/DD/YYYY</option>
+                                <option value="DD/MM/YYYY" {{if eq .Data.User.DateFormat "DD/MM/YYYY"}}selected{{end}}>DD/MM/YYYY</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="dark_theme" name="dark_theme" {{if .Data.User.UseDarkTheme}}checked{{end}}>
+                            <label class="form-check-label" for="dark_theme">Use Dark Theme</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Preferences</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Security</h5>
+                    <p>Two-Factor Authentication: {{if .Data.User.TwoFactorEnabled}}Enabled{{else}}Disabled{{end}}</p>
+                    {{if not .Data.User.TwoFactorEnabled}}
+                    <a href="/setup-2fa" class="btn btn-warning">Setup 2FA</a>
+                    {{else}}
+                    <p class="text-success">Your account is secured with 2FA</p>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

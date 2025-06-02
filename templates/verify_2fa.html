@@ -1,0 +1,22 @@
+{{define "content"}}
+<div class="container mt-4">
+    <h1>Verify Two-Factor Authentication</h1>
+
+    {{if .Data.Error}}
+    <div class="alert alert-danger">{{.Data.Error}}</div>
+    {{end}}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Enter Authentication Code</h5>
+            <form action="/verify-2fa?secret={{.Data.secret}}" method="post">
+                <div class="mb-3">
+                    <label for="code" class="form-label">Enter the 6-digit code from your authenticator app</label>
+                    <input type="text" class="form-control" id="code" name="code" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Verify</button>
+            </form>
+        </div>
+    </div>
+</div>
+{{end}}
