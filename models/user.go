@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"golang.org/x/crypto/bcrypt"
+	"time"
 )
 
 type User struct {
@@ -13,6 +14,15 @@ type User struct {
 	Password string `json:"password,omitempty"`
 	Role     string `json:"role"` // e.g., "admin", "user"
 	UID      string `json:"uid"`
+	Name     string `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	PasswordHash string `json:"password_hash,omitempty"`
+	ProfilePicture sql.NullString `json:"profile_picture"`
+	DefaultCurrency string `json:"default_currency"`
+	TwoFactorEnabled bool `json:"two_factor_enabled"`
+	UseDarkTheme     bool `json:"use_dark_theme"`
+	DateFormat       string `json:"date_format"`
+	Initials         string `json:"initials"`
 }
 
 func GetUserRole(db *sql.DB, userId int) (string, error) {
@@ -47,4 +57,36 @@ func LoginUser(db *sql.DB, email, password string) (User, error) {
 	}
 
 	return user, nil
+}
+
+func CreateUsersTable(db *sql.DB) error {
+	query := `
+	CREATE TABLE IF NOT EXISTS users (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	name TEXT NOT NULL,
+	email TEXT NOT NULL UNIQUE,
+	password_hash TEXT NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	profile_picture TEXT,
+	default_currency TEXT DEFAULT 'USD',
+	date_format TEXT DEFAULT 'YYYY-MM-DD',
+	use_dark_theme BOOLEAN DEFAULT false,
+	two_factor_enabled BOOLEAN DEFAULT false,
+	)`
+
+	_, err := db.Exec(query)
+	return err
+}
+
+func CreateUserSettingsTable(db *sql.DB) error {
+	query := `
+	CREATE TABLE IF NOT EXISTS user_settings (
+	user_id INTEGER PRIMARY KEY,
+	email_notifications BOOLEAN DEFAULT true,
+	use_dark_theme BOOLEAN DEFAULT false,
+	language TEXT DEFAULT 'en',
+	FOREIGN KEY (user_id) REFERENCES users(id)
+	)`
+	_, err := db.Exec(query)
+	return err
 }

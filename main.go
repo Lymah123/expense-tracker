@@ -18,6 +18,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -52,7 +53,7 @@ func init() {
 		log.Fatal("Failed to parse default templates:", err)
 	}
 
-	templateFiles := []string{"dashboard", "home", "add", "view", "report", "currencies", "receipts", "login", "register", "faq", "contact", "privacy", "terms"}
+	templateFiles := []string{"dashboard", "home", "add", "view", "report", "currencies", "receipts", "login", "register", "faq", "contact", "privacy", "terms", "profile", "settings", "setup_2fa", "verify_2fa", "2fa_already_enabled" }
 
 	for _, tmpl := range templateFiles {
 
@@ -116,6 +117,9 @@ func main() {
 	}
 
 	// Create necessary tables
+	if err := createUserTables(db); err != nil {
+		log.Fatalf("Failed to crate user tables: %v", err)
+	}
 	if err := models.CreateCurrenciesTable(db); err != nil {
 		log.Fatalf("Failed to create currencies table: %v", err)
 	}
@@ -203,6 +207,12 @@ func main() {
 	protected.HandleFunc("/expenses", apihandlers.GetExpensesAPI(db)).Methods("GET")
 
 	// Other routes
+	r.HandleFunc("/profile", profileHandler)
+	r.HandleFunc("/settings", settingsHandler)
+	r.HandleFunc("/logout", logoutHandler)
+	r.HandleFunc("/profile/update-personal", updatePersonalInfoHandler)
+	r.HandleFunc("/profile/update-preferences", updatePreferencesHandler)
+	r.HandleFunc("/settings/update", updateSettingsHandler)
 	r.HandleFunc("/dashboard", dashboardHandler)
 	r.HandleFunc("/home", homeHandler)
 	r.HandleFunc("/view", viewExpensesHandler)
@@ -238,8 +248,6 @@ func main() {
 	})
 	r.HandleFunc("/bulk-add", handlers.BulkAddExpensesHandler(db))
 
-	// Recurring expense routes
-	// r.HandleFunc("/recurring", RecurringExpenseHandler)
 	r.HandleFunc("/recurring", handlers.ListRecurringExpensesHandler(db))
 	r.HandleFunc("/recurring/add", handlers.AddRecurringExpenseHandler(db))
 	r.HandleFunc("/recurring/{id}/toggle", handlers.ToggleRecurringExpenseHandler(db))
@@ -323,6 +331,61 @@ func renderTemplate(w http.ResponseWriter, tmpl string, data interface{}) {
 
 	templateData.PageName = tmpl
 	templateData.Data = data
+}
+
+func createUserTables(db *sql.DB) error {
+    usersQuery := `
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        password TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        profile_picture TEXT,
+        default_currency TEXT DEFAULT 'USD',
+        date_format TEXT DEFAULT 'YYYY-MM-DD',
+        use_dark_theme BOOLEAN DEFAULT FALSE,
+        two_factor_enabled BOOLEAN DEFAULT FALSE,
+        two_factor_secret TEXT,
+        role TEXT DEFAULT 'user'
+    );`
+
+    if _, err := db.Exec(usersQuery); err != nil {
+        return err
+    }
+
+    settingsQuery := `
+    CREATE TABLE IF NOT EXISTS user_settings (
+        user_id INTEGER PRIMARY KEY,
+        email_notifications BOOLEAN DEFAULT FALSE,
+        use_dark_theme BOOLEAN DEFAULT FALSE,
+        language TEXT DEFAULT 'en',
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    );`
+
+    _, err := db.Exec(settingsQuery)
+		if err != nil {
+			return err
+		}
+
+		var count int
+		if err := db.QueryRow("SELECT COUNT(*) FROM users").Scan(&count); err != nil {
+			return err
+		}
+
+		if count == 0 {
+			_, err := db.Exec("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)", "Admin User", "@dmin@example.com", "password123", "admin")
+			if err != nil {
+				return err
+			}
+
+			_, err = db.Exec("INSERT INTO user_settings (user_id, email_notifications, use_dark_theme, language) VALUES (?, ?, ?, ?)", 1, false, false, "en")
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
 }
 
 func createBudgetTable(db *sql.DB) error {
@@ -457,36 +520,161 @@ func addExpensePageHandler(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "add", currencies)
 }
 
-// 2FA setup and verification endpoints
+func profileHandler(w http.ResponseWriter, r *http.Request) {
+	userId := getUserIdFromSession(r)
+	if userId == 0 {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	var user models.User
+	err := db.QueryRow(`SELECT id, name, email, created_at, profile_picture, default_currency, date_format, use_dark_theme, two_factor_enabled FROM users WHERE id = ?`, userId).Scan(&user.Id, &user.Name, &user.Email, &user.CreatedAt, &user.ProfilePicture, &user.DefaultCurrency, &user.DateFormat, &user.UseDarkTheme, &user.TwoFactorEnabled,)
+
+	if err != nil {
+		log.Printf("Error retrieving user: %v", err)
+		http.Error(w, "Error retrieving user profile", http.StatusInternalServerError)
+		return
+	}
+
+	// Get user's initials for profile picture placeholder
+	if user.Name != "" {
+		nameParts := strings.Fields(user.Name)
+		if len(nameParts) > 0 {
+			user.Initials = string(nameParts[0][0])
+			if len(nameParts) > 1 {
+				user.Initials += string(nameParts[len(nameParts) -1][0])
+			}
+		}
+	}
+
+	// Get available currencies
+	currencies, err := models.GetCurrencies(db)
+	if err != nil {
+		log.Printf("Error retrieving currencies: %v", err)
+	}
+
+	data := struct {
+		User models.User
+		Currencies []models.Currency
+		Message string
+	}{
+		User: user,
+		Currencies: currencies,
+		Message: r.URL.Query().Get("message"),
+	}
+
+	renderTemplate(w, "profile", data)
+}
+
+func getUserIdFromSession(_ *http.Request) int {
+	// This function should retrieve the user Id from the session
+	//For now, we'll just return a placeholder value
+	return 1
+}
+
+func settingsHandler(w http.ResponseWriter, r *http.Request) {
+	userId := getUserIdFromSession(r)
+	if userId == 0 {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	var settings struct {
+		EmailNotifications bool
+		DarkMode bool
+		Language string
+	}
+
+	// Get user settings from the database
+	err := db.QueryRow(`SELECT email_notifications, use_dark_theme, language FROM user_settings WHERE user_id = ?`, userId).Scan(&settings.EmailNotifications, &settings.DarkMode, &settings.Language,
+	)
+
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("Error retrieving settings: %v", err)
+		http.Error(w, "Error retrieving user settings", http.StatusInternalServerError)
+		return
+	}
+
+	data := struct {
+		Settings interface{}
+		Message string
+	}{
+	Settings: settings,
+	Message: r.URL.Query().Get("message"),
+	}
+
+	renderTemplate(w, "settings", data)
+}
+
+
 func setup2FAHandler(w http.ResponseWriter, r *http.Request) {
+	userId := getUserIdFromSession(r)
+	if userId == 0 {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	// Check if user already has 2FA
+	var has2FA bool
+	err := db.QueryRow("SELECT two_factor_enabled FROM users WHERE id = ?", userId).Scan(&has2FA)
+	if err != nil {
+		log.Printf("Error checking 2FA status: %v", err)
+		http.Error(w, "Error setting up 2FA", http.StatusInternalServerError)
+		return
+	}
+
+	if has2FA {
+		// User already has 2FA
+		renderTemplate(w, "2fa_already_enabled", nil)
+		return
+	}
+
 	key, err := totp.Generate(totp.GenerateOpts{
-		Issuer:      "ExpenseTracker",
-		AccountName: "user@example.com",
+		Issuer: 		"ExpenseTracker",
+		AccountName: getUserEmail(userId),
 	})
 	if err != nil {
 		http.Error(w, "Error generating 2FA key", http.StatusInternalServerError)
+		return
 	}
-	// save key.Secrete() to the user's account in the database
-	http.Redirect(w, r, "/verify-2fa?secret="+key.Secret(), http.StatusSeeOther)
+
+	storeSecretInSession(w, r, key.Secret())
+
+	data := struct {
+		Secret string
+		QRCode string
+	}{
+		Secret: key.Secret(),
+		QRCode: key.URL(),
+	}
+
+	renderTemplate(w, "setup_2fa", data)
 }
 
-func verify2FAHandler(w http.ResponseWriter, r *http.Request) {
-	secret := r.URL.Query().Get("secret")
-	code := r.FormValue("code")
-	if totp.Validate(code, secret) {
-		// Mark the user as verified in the database
-		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
-	} else {
-		http.Error(w, "Invalid 2FA code", http.StatusUnauthorized)
-	}
-}
-
-func parseFloat(s string) float64 {
-	f, err := strconv.ParseFloat(s, 64)
+// Helper to get user email
+func getUserEmail(userId int) string {
+	var email string
+	err := db.QueryRow("SELECT email FROM users WHERE id = ?", userId).Scan(&email)
 	if err != nil {
-		return 0
+		return "user@example.com"
 	}
-	return f
+	return email
+}
+
+func logoutHandler(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:  "session_token",
+		Value: "",
+		Path:  "/",
+		MaxAge: -1,
+		HttpOnly: true,
+	})
+
+	// Clear any Firebase auth tokens (if using Firebase)
+	// You might need additional cleanup based on the auth mechanism
+
+	// Redirect to login page
+	http.Redirect(w, r, "/login?message=Successfully+loggged+out", http.StatusSeeOther)
 }
 
 // Admin handler
@@ -543,4 +731,142 @@ func RecurringExpenseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	renderTemplate(w, "recurring", data)
+}
+
+// Parse float helper function
+func parseFloat(s string) float64 {
+	value, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return 0.0
+	}
+	return value
+}
+
+func storeSecretInSession(w http.ResponseWriter, _*http.Request, secret string) {
+	http.SetCookie(w, &http.Cookie{
+		Name:  "totp_secret",
+		Value: secret,
+		Path:	"/",
+		HttpOnly: true,
+		MaxAge:  3600,
+	})
+}
+
+func verify2FAHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+		renderTemplate(w, "verify_2fa", nil)
+		return
+	}
+
+	code := r.FormValue("code")
+	secret := r.URL.Query().Get("secret")
+
+	valid := totp.Validate(code, secret)
+	if !valid {
+		renderTemplate(w, "verify_2fa", map[string]interface{}{
+			"Error": "Invalid verification code",
+			"secret": secret,
+		})
+		return
+	}
+
+	// Code is valid, enable 2FA for user
+	userId := getUserIdFromSession(r)
+	_, err := db.Exec("UPDATE users SET two_factor_enabled = 1, two_factor_secret = ? WHERE id = ?", secret, userId)
+if err != nil {
+	http.Error(w, "Error enabling 2FA", http.StatusInternalServerError)
+	return
+}
+
+http.Redirect(w, r, "/profile?message=Two-factor+authentication+enabled", http.StatusSeeOther)
+}
+
+func updatePersonalInfoHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userId := getUserIdFromSession(r)
+	if userId == 0 {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	name := r.FormValue("name")
+	email := r.FormValue("email")
+	profilePicture := r.FormValue("profile_picture")
+
+	_, err := db.Exec("UPDATE users SET name = ?, email = ?, profile_picture = ? WHERE id = ?", name, email, profilePicture, userId)
+	if err != nil {
+		http.Error(w, "Error updating profile", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/profile?message=Profile+updated+successfully", http.StatusSeeOther)
+}
+
+// UpdatePreferencesHandler
+func updatePreferencesHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userId := getUserIdFromSession(r)
+	if userId == 0 {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	defaultCurrency := r.FormValue("default_currency")
+	dateFormat := r.FormValue("date_format")
+	darkTheme := r.FormValue("dark_theme") == "on"
+
+	_, err := db.Exec("UPDATE users SET default_currency = ?, date_format = ?, use_dark_theme = ? WHERE id = ?", defaultCurrency, dateFormat, darkTheme, userId)
+	if err != nil {
+		http.Error(w, "Error updating preferences", http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/profile?message=Preferences+updated+successfully", http.StatusSeeOther)
+}
+
+func updateSettingsHandler (w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userId := getUserIdFromSession(r)
+	if userId == 0 {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+
+	emailNotifications := r.FormValue("email_notifications") == "on"
+	darkMode := r.FormValue("dark_mode") == "on"
+	language := r.FormValue("language")
+
+	// Check if settings exist
+	var count int
+	err := db.QueryRow("SELECT COUNT(*) FROM user_settings WHERE user_id = ?", userId).Scan(&count)
+	if err != nil {
+		http.Error(w, "Error checking user settings", http.StatusInternalServerError)
+		return
+	}
+
+	var query string
+	if count > 0 {
+		query = "UPDATE user_settings SET email_notifications = ?, use_dark_theme = ?, language = ? WHERE user_id = ?"
+	} else {
+		query = "INSERT INTO user_settings (email_notifications, use_dark_theme, language, user_id) VALUES (?, ?, ?, ?)"
+	}
+
+	_, err = db.Exec(query, emailNotifications, darkMode, language, userId)
+	if err != nil {
+		http.Error(w, "Error updating user settings", http.StatusInternalServerError)
+		return
+	}
+	http.Redirect(w, r, "/settings?message=Settings+updated+successfully", http.StatusSeeOther)
 }
